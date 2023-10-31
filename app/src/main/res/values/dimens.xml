@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mainmenu_icons_padding">8dp</dimen>
+    <dimen name="settingslist_text_16sp">16sp</dimen>
+    <dimen name="framelayout_start_settings_16dp">16dp</dimen>
+</resources>
