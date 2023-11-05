@@ -12,7 +12,7 @@ class SettingsActivity : AppCompatActivity() {
         val settingsToolbar: Toolbar = findViewById(R.id.settingsToolbar)
 
         settingsToolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()  // можно finish()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 }
