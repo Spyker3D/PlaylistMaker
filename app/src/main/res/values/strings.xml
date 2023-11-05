@@ -7,4 +7,6 @@
     <string name="share_app">Поделиться приложением</string>
     <string name="text_to_support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
