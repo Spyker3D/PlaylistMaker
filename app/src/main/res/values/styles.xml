@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="SettingsToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <style name="ToolbarSettingsTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="MainMenuToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <style name="ToolbarMainMenuTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="MainMenuButtons" parent="Widget.MaterialComponents.Button">
+    <style name="ButtonsMainMenu" parent="Widget.MaterialComponents.Button">
         <item name="android:backgroundTint">@color/white</item>
         <item name="cornerRadius">16dp</item>
         <item name="android:textSize">22sp</item>

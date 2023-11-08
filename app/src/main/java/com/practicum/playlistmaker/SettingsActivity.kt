@@ -9,7 +9,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val settingsToolbar: Toolbar = findViewById(R.id.settingsToolbar)
+        val settingsToolbar: Toolbar = findViewById(R.id.toolbarSettings)
 
         settingsToolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()

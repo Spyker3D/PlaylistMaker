@@ -3,105 +3,104 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white" >
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/settingsToolbar"
+        android:id="@+id/toolbarSettings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/arrow_back"
         app:title="@string/settings"
-        app:titleTextAppearance="@style/SettingsToolbarTitleText" />
+        app:titleTextAppearance="@style/ToolbarSettingsTitleText" />
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/framelayout_start_settings_16dp"
-        android:layout_marginTop="45dp"
-        android:paddingEnd="12dp">
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/activity_settings_padding_start_16dp"
+        android:paddingEnd="@dimen/activity_settings_padding_end_12dp">
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/black_theme"
-            android:textColor="@color/black"
-            android:textSize="@dimen/settingslist_text_16sp" />
+            android:layout_marginTop="45dp">
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/darkThemeSwitcher"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="0dp" />
-    </FrameLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/black_theme"
+                android:textColor="@color/black"
+                android:textSize="@dimen/settingslist_text_16sp" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="@dimen/framelayout_start_settings_16dp"
-        android:paddingEnd="12dp" >
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switcherDarkTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end" />
+        </FrameLayout>
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/share_app"
-            android:textColor="@color/black"
-            android:textSize="@dimen/settingslist_text_16sp"/>
+            android:layout_marginTop="32dp">
 
-        <ImageView
-            android:id="@+id/shareButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/share"
-            android:layout_gravity="end"/>
-    </FrameLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/share_app"
+                android:textColor="@color/black"
+                android:textSize="@dimen/settingslist_text_16sp" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="42dp"
-        android:layout_marginStart="@dimen/framelayout_start_settings_16dp"
-        android:paddingEnd="12dp" >
+            <ImageView
+                android:id="@+id/buttonShare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:src="@drawable/share" />
+        </FrameLayout>
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_to_support"
-            android:textColor="@color/black"
-            android:textSize="@dimen/settingslist_text_16sp"/>
+            android:layout_marginTop="@dimen/activity_settings_elements_margintop_42dp">
 
-        <ImageView
-            android:id="@+id/supportButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/support"
-            android:layout_gravity="end"/>
-    </FrameLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_to_support"
+                android:textColor="@color/black"
+                android:textSize="@dimen/settingslist_text_16sp" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="42dp"
-        android:layout_marginStart="@dimen/framelayout_start_settings_16dp"
-        android:paddingEnd="12dp" >
+            <ImageView
+                android:id="@+id/buttonSupport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:src="@drawable/support" />
+        </FrameLayout>
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/user_agreement"
-            android:textColor="@color/black"
-            android:textSize="@dimen/settingslist_text_16sp"/>
+            android:layout_marginTop="@dimen/activity_settings_elements_margintop_42dp">
 
-        <ImageView
-            android:id="@+id/userAgreementButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/arrow_forward"
-            android:layout_gravity="end"/>
-    </FrameLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_agreement"
+                android:textColor="@color/black"
+                android:textSize="@dimen/settingslist_text_16sp" />
+
+            <ImageView
+                android:id="@+id/buttonUserAgreement"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:src="@drawable/arrow_forward" />
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>
