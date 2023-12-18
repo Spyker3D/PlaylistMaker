@@ -2,9 +2,9 @@
 <resources>
     <dimen name="mainmenu_icons_padding">8dp</dimen>
     <dimen name="settingslist_text_16sp">16sp</dimen>
-    <dimen name="activity_settings_padding_start_16dp">16dp</dimen>
+    <dimen name="padding_16dp">16dp</dimen>
     <dimen name="vertical_margin_8dp">8dp</dimen>
-    <dimen name="activity_settings_padding_end_12dp">12dp</dimen>
+    <dimen name="margin_end_12dp">12dp</dimen>
     <dimen name="activity_settings_elements_margintop_42dp">42dp</dimen>
 
 </resources>

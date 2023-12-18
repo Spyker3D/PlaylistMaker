@@ -7,27 +7,26 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import com.practicum.playlistmaker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val searchButton = findViewById<Button>(R.id.buttonSearch)
-        val mediaLibraryButton = findViewById<Button>(R.id.buttonMediaLibrary)
-        val settingsButton = findViewById<Button>(R.id.buttonSettings)
-
-        searchButton.setOnClickListener {
+        binding.buttonSearch.setOnClickListener {
             val searchIntent = Intent(this, SearchActivity::class.java)
             startActivity(searchIntent)
         }
 
-        mediaLibraryButton.setOnClickListener {
+        binding.buttonMediaLibrary.setOnClickListener {
             val mediaLibraryIntent = Intent(this, MediaLibraryActivity::class.java)
             startActivity(mediaLibraryIntent)
         }
 
-        settingsButton.setOnClickListener {
+        binding.buttonSettings.setOnClickListener {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
         }

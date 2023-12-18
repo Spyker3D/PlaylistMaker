@@ -3,10 +3,14 @@
     <style name="Base.Theme.PlaylistMaker" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/dark_black</item>
+        <item name="colorPrimaryVariant">@color/dark_black</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/dark_black</item>
+        <item name="colorSecondaryVariant">@color/dark_black</item>
+        <item name="colorOnSecondary">@color/white</item>
     </style>
 
-    <style name="ThemeOverlay.PlaylistMaker.FullscreenContainer" parent="">
-        <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
-        <item name="fullscreenTextColor">@color/light_blue_A400</item>
-    </style>
+    <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
+
 </resources>
