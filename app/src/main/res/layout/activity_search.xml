@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SearchActivity"
-    >
+    tools:context=".SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarSearch"
@@ -22,8 +21,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingVertical="@dimen/vertical_margin_8dp"
-        android:paddingHorizontal="@dimen/padding_16dp">
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="16dp">
 
         <EditText
             style="@style/EditTextSearch"
@@ -31,17 +30,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="10dp"
-            android:paddingHorizontal="@dimen/margin_end_12dp"
+            android:paddingHorizontal="12dp"
+            android:maxLines="1"
             android:hint="@string/search" />
 
         <ImageView
             android:id="@+id/clearIcon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/margin_end_12dp"
+            android:layout_marginEnd="12dp"
             android:layout_gravity="end"
             android:src="@drawable/baseline_close_24"
             android:visibility="gone" />
     </FrameLayout>
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="16dp"
+        tools:listitem="@layout/track_view"/>
 
 </LinearLayout>

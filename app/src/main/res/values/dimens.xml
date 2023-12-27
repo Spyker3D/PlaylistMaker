@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="mainmenu_icons_padding">8dp</dimen>
-    <dimen name="settingslist_text_16sp">16sp</dimen>
-    <dimen name="padding_16dp">16dp</dimen>
-    <dimen name="vertical_margin_8dp">8dp</dimen>
-    <dimen name="margin_end_12dp">12dp</dimen>
-    <dimen name="activity_settings_elements_margintop_42dp">42dp</dimen>
+    <dimen name="settings_and_tracklist_text_size">16sp</dimen>
+    <dimen name="settings_elements_padding">16dp</dimen>
+    <dimen name="settings_icons_margin_end">12dp</dimen>
+    <dimen name="activity_settings_elements_margintop">42dp</dimen>
+    <dimen name="track_image_rounding">2dp</dimen>
 
 </resources>

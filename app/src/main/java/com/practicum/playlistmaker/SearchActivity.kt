@@ -4,13 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 
 class SearchActivity : AppCompatActivity() {
@@ -25,7 +21,7 @@ class SearchActivity : AppCompatActivity() {
         val inputEditText = binding.inputEditText
 
         if (savedInstanceState != null) {
-            text = savedInstanceState.getString(INPUT_TEXT).toString()
+            text = savedInstanceState.getString(KEY_INPUT_TEXT).toString()
             inputEditText.setText(text)
         }
 
@@ -36,11 +32,7 @@ class SearchActivity : AppCompatActivity() {
         val imm: InputMethodManager =
             getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
-        binding.clearIcon.setOnClickListener {
-            inputEditText.setText("")
-
-            imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-        }
+        lateinit var trackSearchAdapter: TrackSearchAdapter
 
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -51,17 +43,38 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 binding.clearIcon.isVisible = !s.isNullOrEmpty()
                 text = inputEditText.text.toString()
+
+                val searchRecyclerView = binding.searchRecyclerView
+                searchRecyclerView.layoutManager =
+                    LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+
+                val filteredTrackList =
+                    trackList.filter {
+                        it.trackName.contains(
+                            text,
+                            ignoreCase = true
+                        ) or it.artistName.contains(text, ignoreCase = true)
+                    }
+
+                trackSearchAdapter = TrackSearchAdapter(filteredTrackList)
+                searchRecyclerView.adapter = trackSearchAdapter
             }
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
+
+        binding.clearIcon.setOnClickListener {
+            inputEditText.setText("")
+            imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+            trackSearchAdapter.clearList()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(INPUT_TEXT, text)
+        outState.putString(KEY_INPUT_TEXT, text)
     }
 
     companion object {
-        private const val INPUT_TEXT = "INPUT_TEXT"
+        private const val KEY_INPUT_TEXT = "INPUT_TEXT"
     }
 }
