@@ -8,5 +8,6 @@
     <color name="gray">#AEAFB4</color>
     <color name="light_gray">#E6E8EB</color>
     <color name="image_tint">#AEAFB4</color>
+    <color name="update_button_text_color">#FFFFFF</color>
 
 </resources>
