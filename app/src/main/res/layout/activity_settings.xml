@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/arrow_back"
         app:title="@string/settings"
-        app:titleTextAppearance="@style/ToolbarOtherMenuTitleText"/>
+        app:titleTextAppearance="@style/ToolbarTitleText"/>
 
     <FrameLayout
         android:layout_width="match_parent"

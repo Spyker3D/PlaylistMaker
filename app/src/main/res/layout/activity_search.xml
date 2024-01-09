@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/arrow_back"
         app:title="@string/search"
-        app:titleTextAppearance="@style/ToolbarOtherMenuTitleText" />
+        app:titleTextAppearance="@style/ToolbarTitleText" />
 
     <FrameLayout
         android:id="@+id/edittextContainer"
@@ -32,7 +32,9 @@
             android:paddingVertical="10dp"
             android:paddingHorizontal="12dp"
             android:maxLines="1"
-            android:hint="@string/search" />
+            android:hint="@string/search"
+            android:imeOptions="actionDone"
+            />
 
         <ImageView
             android:id="@+id/clearIcon"
@@ -43,12 +45,45 @@
             android:src="@drawable/baseline_close_24"
             android:visibility="gone" />
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imagePlaceholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="102dp"
+        android:layout_gravity="center_horizontal"
+        tools:src="@drawable/search_error_icon"/>
+
+    <TextView
+        android:id="@+id/textPlaceholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/search_error_message"
+        android:textAlignment="center"
+        android:textAppearance="@style/ToolbarTitleText"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        />
+
+    <Button
+        android:id="@+id/buttonUpdate"
+        style="@style/updateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:text="@string/update"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
     
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginVertical="16dp"
-        tools:listitem="@layout/track_view"/>
+        tools:listitem="@layout/track_view"
+        tools:visibility="gone"
+        />
 
 </LinearLayout>
