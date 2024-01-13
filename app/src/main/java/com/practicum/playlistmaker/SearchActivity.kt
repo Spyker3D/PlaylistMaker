@@ -18,15 +18,19 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
 private const val ITUNES_URL = "https://itunes.apple.com"
 
@@ -140,21 +144,30 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 try {
-                    val trackResponse = iTunesApi.searchTrack(text)
-                    if (trackResponse.results.isNotEmpty()) {
-                        trackSearchAdapter.trackList = trackResponse.results
-                        trackSearchAdapter.notifyDataSetChanged()
-                        setTextPlaceholder("")
-                        setImagePlaceholder(android.R.color.transparent)
-                    } else {
-                        setTextPlaceholder(getString(R.string.nothing_found))
-                        setImagePlaceholder(R.drawable.not_found_icon)
+                    val trackResponse = withContext(Dispatchers.IO) {
+                        iTunesApi.searchTrack(text).execute()
                     }
-                } catch (e: Exception) {
+                    if (trackResponse.code() == 200) {
+                        if (trackResponse.body()?.results?.isNotEmpty() == true) {
+                            trackSearchAdapter.trackList = trackResponse.body()?.results!!
+                            trackSearchAdapter.notifyDataSetChanged()
+                            setTextPlaceholder("")
+                            setImagePlaceholder(android.R.color.transparent)
+                        } else {
+                            setTextPlaceholder(getString(R.string.nothing_found))
+                            setImagePlaceholder(R.drawable.not_found_icon)
+                        }
+                    } else {
+                        setTextPlaceholder(getString(R.string.server_error))
+                        setImagePlaceholder(R.drawable.search_error_icon)
+                    }
+                } catch (e: IOException) {
+                    Log.e("SearchActivity", "Network error", e)
                     setTextPlaceholder(getString(R.string.search_error_message))
                     setImagePlaceholder(R.drawable.search_error_icon)
+                } finally {
+                    this@launch.cancel()
                 }
-                this@launch.cancel()
             }
         }
     }
