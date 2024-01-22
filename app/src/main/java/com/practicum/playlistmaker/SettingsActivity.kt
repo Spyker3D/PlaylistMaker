@@ -5,12 +5,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SwitchCompat
-import androidx.appcompat.widget.Toolbar
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
@@ -20,28 +15,17 @@ class SettingsActivity : AppCompatActivity() {
         val binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val switchNightMode = binding.switcherNightTheme
+        val themeSwitcher = binding.themeSwitcher
 
         binding.toolbarSettings.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        val sharedPreferences =
-            getSharedPreferences("com.practicum.playlistmaker.MY_PREFS", MODE_PRIVATE)
+        themeSwitcher.isChecked = (applicationContext as App).nightMode
 
-        switchNightMode.setOnCheckedChangeListener { _, isCheckedStatus ->
-            sharedPreferences
-                .edit()
-                .putBoolean("isNightModeOn", isCheckedStatus)
-                .apply()
-            if (isCheckedStatus) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
+        themeSwitcher.setOnCheckedChangeListener { _, isCheckedStatus ->
+            (applicationContext as App).switchTheme(isCheckedStatus)
         }
-
-        switchNightMode.isChecked = sharedPreferences.getBoolean("isNightModeOn", false)
 
         binding.buttonShare.setOnClickListener {
             Intent().apply {
