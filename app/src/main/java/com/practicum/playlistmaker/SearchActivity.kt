@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.appcompat.app.AppCompatActivity
@@ -68,16 +69,17 @@ class SearchActivity : AppCompatActivity() {
 
         val youSearchedText: TextView = binding.youSearchedText
 
+        val onTrackClickListener = OnTrackClickListener { track ->
+            setOnTrackClickListenerLogic(track, sharedPreferences)
+        }
+
         trackHistoryAdapter = TrackAdapter(
             readFromTrackListHistoryFromSharedPrefs(sharedPreferences).toMutableList(),
+            onTrackClickListener = onTrackClickListener,
             onActionButtonClickListener = {
                 setupCleanHistoryButtonListener(it, sharedPreferences, youSearchedText)
             }
         )
-
-        val onTrackClickListener = OnTrackClickListener { track ->
-            setOnTrackClickListenerLogic(track, sharedPreferences)
-        }
 
         trackSearchAdapter = TrackAdapter(emptyList(), onTrackClickListener)
         recyclerView.adapter = trackSearchAdapter
@@ -230,11 +232,16 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setOnTrackClickListenerLogic(track: Track, sharedPreferences: SharedPreferences) {
-        trackHistoryAdapter.updateList {
-            val historyList = addToHistoryList(track, it)
-            writeTrackListHistoryToSharedPrefs(sharedPreferences, historyList)
-            historyList
+        if (recyclerView.adapter == trackSearchAdapter) {
+            trackHistoryAdapter.updateList {
+                val historyList = addToHistoryList(track, it)
+                writeTrackListHistoryToSharedPrefs(sharedPreferences, historyList)
+                historyList
+            }
         }
+        val audioplayerIntent = Intent(this, AudioplayerActivity::class.java)
+        audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, track)
+        startActivity(audioplayerIntent)
     }
 
     private fun setClearIconOnClickListenerLogic(inputEditText: EditText, imm: InputMethodManager) {

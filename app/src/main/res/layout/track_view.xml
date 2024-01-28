@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/track_name"
         app:layout_constraintHorizontal_bias="0"
-        tools:src="@drawable/placeholder"
+        tools:src="@drawable/placeholder_track"
         android:layout_marginEnd="8dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         />

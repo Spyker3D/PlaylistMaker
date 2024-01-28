@@ -19,5 +19,10 @@
     <string name="server_error">Ошибка сервера</string>
     <string name="clear_history">Очистить историю</string>
     <string name="you_searched">Вы искали</string>
+    <string name="track_length">Длительность</string>
+    <string name="track_country">Страна</string>
+    <string name="track_genre">Жанр</string>
+    <string name="track_album">Альбом</string>
+    <string name="track_release_year">Год</string>
 
 </resources>
