@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +15,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -25,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.w3c.dom.Text
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
@@ -32,21 +36,32 @@ import java.io.IOException
 private const val ITUNES_URL = "https://itunes.apple.com"
 private const val KEY_INPUT_TEXT = "INPUT_TEXT"
 private const val KEY_SEARCH_TRACKLIST = "TRACKLIST_SEARCH"
+private const val TRACK_CLICK_DEBOUNCE_DELAY = 1000L
+private const val SEARCH_DEBOUNCE_DELAY = 2000L
 
 class SearchActivity : AppCompatActivity() {
 
     private var text: String = ""
+    private var isClickAllowed = true
+
     private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val iTunesApi = retrofit.create(ItunesApi::class.java)
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { search() }
+    private val isClickAllowedRunnable = Runnable { isClickAllowed = true }
+
     private lateinit var trackSearchAdapter: TrackAdapter
     private lateinit var trackHistoryAdapter: TrackAdapter
     private lateinit var binding: ActivitySearchBinding
     private lateinit var updateButton: Button
     private lateinit var sharedPrefsListener: OnSharedPreferenceChangeListener
     private lateinit var recyclerView: RecyclerView
+    private lateinit var imagePlaceholder: ImageView
+    private lateinit var textPlaceholder: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,12 +112,6 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                search()
-            }
-            false
-        }
 
         if (savedInstanceState != null) {
             text = savedInstanceState.getString(KEY_INPUT_TEXT).toString()
@@ -135,6 +144,13 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+        handler.removeCallbacks(isClickAllowedRunnable)
+
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(KEY_INPUT_TEXT, text)
@@ -145,7 +161,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setTextPlaceholder(text: String) {
-        val textPlaceholder = binding.textPlaceholder
+        textPlaceholder = binding.textPlaceholder
         if (text.isNotEmpty()) {
             textPlaceholder.isVisible = true
             trackSearchAdapter.clearList()
@@ -156,7 +172,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setImagePlaceholder(image: Int) {
-        val imagePlaceholder = binding.imagePlaceholder
+        imagePlaceholder = binding.imagePlaceholder
         when (image) {
             android.R.color.transparent -> {
                 imagePlaceholder.isVisible = false
@@ -178,15 +194,20 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search() {
+        recyclerView.isVisible = false
+        binding.progressCircular.isVisible = true
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 try {
                     val trackResponse = withContext(Dispatchers.IO) {
                         iTunesApi.searchTrack(text).execute()
                     }
+                    binding.progressCircular.isVisible = false
                     if (trackResponse.code() == 200) {
                         if (trackResponse.body()?.results?.isNotEmpty() == true) {
                             trackSearchAdapter.updateList { trackResponse.body()?.results!! }
+                            recyclerView.isVisible = true
                             setTextPlaceholder("")
                             setImagePlaceholder(android.R.color.transparent)
                         } else {
@@ -211,7 +232,7 @@ class SearchActivity : AppCompatActivity() {
     private fun setupCleanHistoryButtonListener(
         trackAdapter: TrackAdapter,
         sharedPreferences: SharedPreferences,
-        youSearchedText: TextView
+        youSearchedText: TextView,
     ) {
         trackAdapter.clearList()
         writeTrackListHistoryToSharedPrefs(sharedPreferences, trackAdapter.trackList)
@@ -223,7 +244,7 @@ class SearchActivity : AppCompatActivity() {
     private fun setOnFocusChangeListenerLogic(
         hasFocus: Boolean,
         inputEditText: EditText,
-        youSearchedText: TextView
+        youSearchedText: TextView,
     ) {
         val showHistory =
             hasFocus && inputEditText.text.isEmpty() && !trackHistoryAdapter.isEmpty()
@@ -239,21 +260,25 @@ class SearchActivity : AppCompatActivity() {
                 historyList
             }
         }
-        val audioplayerIntent = Intent(this, AudioplayerActivity::class.java)
-        audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, track)
-        startActivity(audioplayerIntent)
+        if (clickDebounce()) {
+            val audioplayerIntent = Intent(this, AudioplayerActivity::class.java)
+            audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, track)
+            startActivity(audioplayerIntent)
+        }
     }
 
     private fun setClearIconOnClickListenerLogic(inputEditText: EditText, imm: InputMethodManager) {
         inputEditText.setText("")
         imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-        trackSearchAdapter.clearList()
+        if (trackSearchAdapter.trackList.isNotEmpty()) {
+            trackSearchAdapter.clearList()
+        }
     }
 
     private fun setTextWatcherLogic(
         s: Editable?,
         inputEditText: EditText,
-        youSearchedText: TextView
+        youSearchedText: TextView,
     ) {
         binding.clearIcon.isVisible = !s.isNullOrEmpty()
         text = inputEditText.text.toString()
@@ -263,5 +288,31 @@ class SearchActivity : AppCompatActivity() {
 
         recyclerView.adapter = if (showHistory) trackHistoryAdapter else trackSearchAdapter
         youSearchedText.isVisible = showHistory
+
+        if (recyclerView.adapter == trackHistoryAdapter) {
+            imagePlaceholder.isVisible = false
+            textPlaceholder.isVisible = false
+            updateButton.isVisible = false
+        }
+        if (s?.isNotBlank() == true) {
+            searchDebounce()
+        } else {
+            handler.removeCallbacks(searchRunnable)
+            trackSearchAdapter.clearList()
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed(isClickAllowedRunnable, TRACK_CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 }

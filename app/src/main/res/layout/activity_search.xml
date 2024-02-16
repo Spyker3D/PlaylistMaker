@@ -9,7 +9,7 @@
     tools:context=".SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarSearch"
+        android:id="@+id/toolbar_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/arrow_back"
@@ -17,7 +17,7 @@
         app:titleTextAppearance="@style/ToolbarTitleText" />
 
     <FrameLayout
-        android:id="@+id/edittextContainer"
+        android:id="@+id/edittext_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -25,7 +25,7 @@
         android:paddingVertical="8dp">
 
         <EditText
-            android:id="@+id/inputEditText"
+            android:id="@+id/input_edit_text"
             style="@style/EditTextSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             android:paddingVertical="10dp" />
 
         <ImageView
-            android:id="@+id/clearIcon"
+            android:id="@+id/clear_icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
@@ -45,8 +45,19 @@
             android:visibility="gone" />
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_marginTop="100dp"
+        android:indeterminateTint="@color/blue"
+        />
+
     <TextView
-        android:id="@+id/youSearchedText"
+        android:id="@+id/you_searched_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -58,7 +69,7 @@
         tools:visibility="visible" />
 
     <ImageView
-        android:id="@+id/imagePlaceholder"
+        android:id="@+id/image_placeholder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -67,7 +78,7 @@
         tools:src="@drawable/search_error_icon" />
 
     <TextView
-        android:id="@+id/textPlaceholder"
+        android:id="@+id/text_placeholder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -78,7 +89,7 @@
         tools:text="@string/search_error_message" />
 
     <Button
-        android:id="@+id/buttonUpdate"
+        android:id="@+id/button_update"
         style="@style/updateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,7 +100,7 @@
         tools:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/searchRecyclerView"
+        android:id="@+id/search_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginVertical="16dp"
