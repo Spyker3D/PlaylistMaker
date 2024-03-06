@@ -1,23 +1,24 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.settingsActivity
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        val viewBinding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
-        val themeSwitcher = binding.themeSwitcher
+        val themeSwitcher = viewBinding.themeSwitcher
 
-        binding.toolbarSettings.setNavigationOnClickListener {
+        viewBinding.toolbarSettings.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
@@ -27,7 +28,7 @@ class SettingsActivity : AppCompatActivity() {
             (applicationContext as App).switchTheme(isCheckedStatus)
         }
 
-        binding.buttonShare.setOnClickListener {
+        viewBinding.buttonShare.setOnClickListener {
             Intent().apply {
                 val message = getString(R.string.link_to_android_developer_course)
                 action = Intent.ACTION_SEND
@@ -38,7 +39,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        binding.buttonSupport.setOnClickListener {
+        viewBinding.buttonSupport.setOnClickListener {
             Intent().apply {
                 val title = getString(R.string.support_email_title)
                 val message = getString(R.string.support_email_message)
@@ -51,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        binding.buttonUserAgreement.setOnClickListener {
+        viewBinding.buttonUserAgreement.setOnClickListener {
             val url = Uri.parse(getString(R.string.practicum_offer))
             val intent = Intent(Intent.ACTION_VIEW, url)
             startActivity(intent)
