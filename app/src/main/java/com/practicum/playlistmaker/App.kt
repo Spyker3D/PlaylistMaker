@@ -3,8 +3,8 @@ package com.practicum.playlistmaker
 import android.app.Application
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.data.storage.PLAYLISTMAKER_SHARED_PREFS
 
-const val PLAYLISTMAKER_SHARED_PREFS = "com.practicum.playlistmaker.MY_PREFS"
 const val SWITCHER_IS_CHECKED_STATUS = "isNightModeOn"
 
 class App : Application() {
