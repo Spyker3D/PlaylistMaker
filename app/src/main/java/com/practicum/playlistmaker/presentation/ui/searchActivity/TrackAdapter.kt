@@ -1,20 +1,20 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.searchActivity
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.databinding.ClearHistoryButtonBinding
 import com.practicum.playlistmaker.databinding.TrackViewBinding
+import com.practicum.playlistmaker.domain.entities.TrackInfo
 
 private const val TYPE_TRACK = 1
 private const val TYPE_BUTTON = 2
 
 class TrackAdapter(
-    trackList: List<Track>,
-    private val onTrackClickListener: OnTrackClickListener? = null,
+    trackList: List<TrackInfo>,
+    private val onTrackClickListener: ((TrackInfo) -> Unit)? = null,
     private val onActionButtonClickListener: ((TrackAdapter) -> Unit)? = null
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var trackList = trackList
         private set
@@ -43,7 +43,7 @@ class TrackAdapter(
         if (holder is TrackViewHolder) {
             holder.bind(trackList[position])
             holder.itemView.setOnClickListener {
-                onTrackClickListener?.onTrackClick(trackList[holder.adapterPosition])
+                onTrackClickListener?.invoke(trackList[holder.adapterPosition])
             }
         }
     }
@@ -58,7 +58,7 @@ class TrackAdapter(
         notifyDataSetChanged()
     }
 
-    fun updateList(operation: (List<Track>) -> List<Track>) {
+    fun updateList(operation: (List<TrackInfo>) -> List<TrackInfo>) {
         trackList = operation(trackList)
         notifyDataSetChanged()
     }
