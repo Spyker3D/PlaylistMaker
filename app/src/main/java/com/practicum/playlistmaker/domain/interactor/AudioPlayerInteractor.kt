@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.domain.repository.AudioPlayerRepository
 
 class AudioPlayerInteractor(private val audioPlayerRepository: AudioPlayerRepository) {
 
-    var audioPlayerState: PlayerState = PlayerState.STATE_DEFAULT // добавить метод
+    var audioPlayerState: PlayerState = PlayerState.STATE_DEFAULT
         private set
 
 

@@ -18,7 +18,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.domain.consumer.Consumer
+//import com.practicum.playlistmaker.domain.consumer.Consumer
+import androidx.core.util.Consumer
 import com.practicum.playlistmaker.domain.consumer.ConsumerData
 import com.practicum.playlistmaker.domain.entities.TrackInfo
 import com.practicum.playlistmaker.presentation.ui.audioPlayer.AudioplayerActivity
@@ -54,7 +55,6 @@ class SearchActivity : AppCompatActivity() {
     private val saveHistoryTrackUseCase by lazy { creator.provideSaveHistoryTrackUseCase() }
     private val getHistoryTrackUseCase by lazy { creator.provideGetHistoryTrackUseCase() }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -74,19 +74,17 @@ class SearchActivity : AppCompatActivity() {
 
         val youSearchedText: TextView = binding.youSearchedText
 
-        val onTrackClickListener = OnTrackClickListener { track ->
-            setOnTrackClickListenerLogic(track)
-        }
-
         trackHistoryAdapter = TrackAdapter(
             getHistoryTrackUseCase.execute(),
-            onTrackClickListener = onTrackClickListener,
+            onTrackClickListener = { setOnTrackClickListenerLogic(it) },
             onActionButtonClickListener = {
                 setupClearHistoryButtonListener(it, youSearchedText)
             }
         )
 
-        trackSearchAdapter = TrackAdapter(emptyList(), onTrackClickListener)
+        trackSearchAdapter = TrackAdapter(emptyList(), onTrackClickListener = {
+            setOnTrackClickListenerLogic(it)
+        })
         recyclerView.adapter = trackSearchAdapter
 
         val inputEditText = binding.inputEditText
@@ -118,8 +116,8 @@ class SearchActivity : AppCompatActivity() {
             }
 
             searchActivityErrorState = SearchActivityError.valueOf(
-                    savedInstanceState.getString(KEY_SEARCH_ACTIVITY_ERROR_STATE).toString()
-                    )
+                savedInstanceState.getString(KEY_SEARCH_ACTIVITY_ERROR_STATE).toString()
+            )
 
             if (text.isNotEmpty()) {
                 showPlaceholders(trackSearchAdapter.trackList)
@@ -141,8 +139,7 @@ class SearchActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(searchRunnable)
-        val currentRunnable = useCaseRunnable
-        currentRunnable?.let { handler.removeCallbacks(currentRunnable) }
+        useCaseRunnable?.let(handler::removeCallbacks)
         handler.removeCallbacks(isClickAllowedRunnable)
     }
 
@@ -224,7 +221,10 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun addToHistoryList(track: TrackInfo, historyTrackList: List<TrackInfo>): List<TrackInfo> {  // OK, в Presentation оставляем
+    private fun addToHistoryList(
+        track: TrackInfo,
+        historyTrackList: List<TrackInfo>,
+    ): List<TrackInfo> {
         val filteredList = historyTrackList - track
         val updatedList = listOf(track) + filteredList
         return if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
@@ -285,8 +285,8 @@ class SearchActivity : AppCompatActivity() {
     private fun searchTrack() {
         searchTrackUseCase.execute(
             trackName = text,
-            consumer = object : Consumer<List<TrackInfo>> {
-                override fun consume(data: ConsumerData<List<TrackInfo>>) {
+            consumer = object : Consumer<ConsumerData<List<TrackInfo>>> {
+                override fun accept(data: ConsumerData<List<TrackInfo>>) {
                     searchActivityErrorState = SearchActivityError.NO_ERROR
                     val currentRunnable = useCaseRunnable
                     currentRunnable?.let { handler.removeCallbacks(currentRunnable) }

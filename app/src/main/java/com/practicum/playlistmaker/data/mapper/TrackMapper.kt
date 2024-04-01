@@ -7,6 +7,15 @@ import java.util.Locale
 
 object TrackMapper {
 
+    private val trackTimeFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+    private val releaseDateFormatDetailed by lazy {
+        SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            Locale.getDefault()
+        )
+    }
+    private val releaseYearFormat by lazy { SimpleDateFormat("yyyy", Locale.getDefault()) }
+
     fun mapToDomain(trackList: List<TrackDto>): List<TrackInfo> {
         return trackList.map {
             TrackInfo(
@@ -28,16 +37,12 @@ object TrackMapper {
     }
 
     private fun trackTimeMillisFormat(trackTimeMillis: Long): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMillis)
+        return trackTimeFormat.format(trackTimeMillis)
     }
 
     private fun releaseYearFormat(releaseDate: String?): String? {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
         return if (releaseDate != null) {
-            inputFormat.parse(releaseDate)
-                ?.let {
-                    SimpleDateFormat("yyyy", Locale.getDefault()).format(it)
-                }
+            releaseDateFormatDetailed.parse(releaseDate)?.let { releaseYearFormat.format(it) }
         } else null
     }
 
@@ -63,12 +68,8 @@ object TrackMapper {
     }
 
     private fun formatYearToReleaseDate(releaseYear: String?): String? {
-        val inputFormat = SimpleDateFormat("yyyy", Locale.getDefault())
         return if (releaseYear != null) {
-            inputFormat.parse(releaseYear)
-                ?.let {
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(it)
-                }
+            releaseYearFormat.parse(releaseYear)?.let { releaseDateFormatDetailed.format(it) }
         } else null
     }
 }

@@ -36,9 +36,7 @@ class AudioplayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAudioplayerBinding
     private val creator by lazy { Creator(applicationContext) }
     private val audioPlayerInteractor by lazy { creator.provideAudioPlayerInteractor() }
-    private val dateFormat by lazy { SimpleDateFormat("m:ss", Locale.getDefault()) } // Mapper?
-    // private lateinit var playerState: PlayerState
-
+    private val dateFormat by lazy { SimpleDateFormat("m:ss", Locale.getDefault()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

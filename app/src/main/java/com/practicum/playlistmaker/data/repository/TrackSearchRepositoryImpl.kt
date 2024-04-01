@@ -15,7 +15,7 @@ class TrackSearchRepositoryImpl(private val networkClient: NetworkClient) : Trac
         return if (response is TracksSearchResponse) {
             val trackList: List<TrackInfo> = TrackMapper.mapToDomain(response.results)
             Resource.Success(trackList)
-        } else if (response.resultCode == 0) {
+        } else if (response.resultCode == -1) {
             Resource.InternetConnectionError()
         } else {
             Resource.Error()

@@ -9,12 +9,12 @@ import com.practicum.playlistmaker.domain.entities.TrackInfo
 
 private const val TYPE_TRACK = 1
 private const val TYPE_BUTTON = 2
+
 class TrackAdapter(
     trackList: List<TrackInfo>,
-    private val onTrackClickListener: OnTrackClickListener? = null,
-    private val onActionButtonClickListener: ( (TrackAdapter) -> Unit)? = null
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val onTrackClickListener: ((TrackInfo) -> Unit)? = null,
+    private val onActionButtonClickListener: ((TrackAdapter) -> Unit)? = null
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var trackList = trackList
         private set
@@ -43,7 +43,7 @@ class TrackAdapter(
         if (holder is TrackViewHolder) {
             holder.bind(trackList[position])
             holder.itemView.setOnClickListener {
-                onTrackClickListener?.onTrackClick(trackList[holder.adapterPosition])
+                onTrackClickListener?.invoke(trackList[holder.adapterPosition])
             }
         }
     }
