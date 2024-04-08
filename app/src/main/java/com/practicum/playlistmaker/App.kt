@@ -1,35 +1,19 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.data.storage.PLAYLISTMAKER_SHARED_PREFS
-
-const val SWITCHER_IS_CHECKED_STATUS = "isNightModeOn"
+import com.practicum.playlistmaker.creator.Creator
 
 class App : Application() {
 
     var nightMode = false
     override fun onCreate() {
         super.onCreate()
-        nightMode = getSharedPreferences(PLAYLISTMAKER_SHARED_PREFS, MODE_PRIVATE).getBoolean(
-            SWITCHER_IS_CHECKED_STATUS, false
-        )
-        switchTheme(nightMode)
-    }
 
-    fun switchTheme(isNightModeOn: Boolean) {
-        nightMode = isNightModeOn
-        AppCompatDelegate.setDefaultNightMode(
-            if (isNightModeOn) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-        )
-        getSharedPreferences(PLAYLISTMAKER_SHARED_PREFS, MODE_PRIVATE)
-            .edit()
-            .putBoolean(SWITCHER_IS_CHECKED_STATUS, isNightModeOn)
-            .apply()
+        Creator.initApp(this)
+        val settingsRepository = Creator.provideSettingsRepository()
+
+        nightMode = settingsRepository.getThemeSettings()
+
+        settingsRepository.updateThemeSetting(nightMode)
     }
 }
