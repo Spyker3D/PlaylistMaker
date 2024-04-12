@@ -3,7 +3,7 @@ package com.practicum.playlistmaker.sharing.data.repository
 import android.content.Context
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.sharing.data.externalNavigator.ExternalNavigator
-import com.practicum.playlistmaker.sharing.domain.ExternalNavigator.NavigatorRepository
+import com.practicum.playlistmaker.sharing.domain.externalNavigator.NavigatorRepository
 import com.practicum.playlistmaker.sharing.domain.entities.EmailData
 
 class NavigatorRepositoryImpl(

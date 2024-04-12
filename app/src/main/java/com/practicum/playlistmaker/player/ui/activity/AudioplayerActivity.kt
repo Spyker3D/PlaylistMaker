@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.databinding.ActivityAudioplayerBinding
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
+import com.practicum.playlistmaker.search.ui.entities.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -18,8 +19,6 @@ const val KEY_SELECTED_TRACK_DETAILS = "TRACK_DETAILS"
 
 class AudioplayerActivity : AppCompatActivity() {
 
-    private lateinit var playStatusButton: ImageButton
-    private lateinit var url: String
     private lateinit var binding: ActivityAudioplayerBinding
 
     private val dateFormat by lazy { SimpleDateFormat("m:ss", Locale.getDefault()) }
@@ -35,15 +34,16 @@ class AudioplayerActivity : AppCompatActivity() {
         binding.arrowBackAudioplayer.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-        playStatusButton = binding.playStatusPlaceholder
-
-        viewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getViewModelFactory()
-        )[PlayerViewModel::class.java]
 
         val track =
-            intent.extras?.getParcelable(KEY_SELECTED_TRACK_DETAILS) as TrackInfo?
+            intent.extras?.getParcelable(KEY_SELECTED_TRACK_DETAILS) as Track?
+
+        track?.let {
+            viewModel = ViewModelProvider(
+                this,
+                PlayerViewModel.getViewModelFactory(track)
+            )[PlayerViewModel::class.java]
+        }
 
         binding.trackName.text = track?.trackName
         binding.bandName.text = track?.artistName
@@ -52,7 +52,6 @@ class AudioplayerActivity : AppCompatActivity() {
         binding.yearPlaceholder.text = track?.releaseYear
         binding.genreNamePlaceholder.text = track?.primaryGenreName
         binding.countryNamePlaceholder.text = track?.country
-        url = track?.previewUrl.toString()
         Glide.with(this)
             .load(track?.artworkUrlLarge)
             .placeholder(R.drawable.placeholder_album)
@@ -78,11 +77,10 @@ class AudioplayerActivity : AppCompatActivity() {
 
                 override fun onCompletion() {
                     setImagePlaceholder(R.drawable.button_play)
-                    binding.replayProgress.text = dateFormat.format(viewModel.getProgressTime())
                 }
             })
 
-        playStatusButton.setOnClickListener { viewModel.startOrPause() }
+        binding.playStatusPlaceholder.setOnClickListener { viewModel.startOrPause() }
     }
 
     override fun onPause() {
@@ -91,6 +89,6 @@ class AudioplayerActivity : AppCompatActivity() {
     }
 
     private fun setImagePlaceholder(image: Int) {
-        playStatusButton.setImageResource(image)
+        binding.playStatusPlaceholder.setImageResource(image)
     }
 }

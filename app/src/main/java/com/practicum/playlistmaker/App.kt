@@ -6,14 +6,15 @@ import com.practicum.playlistmaker.creator.Creator
 class App : Application() {
 
     var nightMode = false
+
     override fun onCreate() {
         super.onCreate()
 
         Creator.initApp(this)
-        val settingsRepository = Creator.provideSettingsRepository()
+        val settingsInteractor = Creator.provideSettingsInteractor()
 
-        nightMode = settingsRepository.getThemeSettings()
+        nightMode = settingsInteractor.getThemeSettings()
 
-        settingsRepository.updateThemeSetting(nightMode)
+        settingsInteractor.updateThemeSetting(nightMode)
     }
 }

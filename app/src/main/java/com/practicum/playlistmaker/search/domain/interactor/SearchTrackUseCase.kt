@@ -1,11 +1,11 @@
 package com.practicum.playlistmaker.search.domain.interactor
 
+import com.practicum.playlistmaker.search.domain.consumer.Consumer
 import com.practicum.playlistmaker.search.domain.consumer.ConsumerData
 import com.practicum.playlistmaker.search.domain.entities.Resource
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.search.domain.repository.TrackSearchRepository
 import java.util.concurrent.Executors
-import androidx.core.util.Consumer
 import java.util.concurrent.Future
 
 class SearchTrackUseCase(private val trackSearchRepository: TrackSearchRepository) {
@@ -13,7 +13,7 @@ class SearchTrackUseCase(private val trackSearchRepository: TrackSearchRepositor
     private val executor = Executors.newCachedThreadPool()
     private var currentRequestFuture: Future<*>? = null
 
-    fun execute(trackName: String, consumer: Consumer<ConsumerData<List<TrackInfo>?>>) {
+    fun execute(trackName: String, consumer: Consumer<List<TrackInfo>>) {
 
         cancelRequest()
 
@@ -21,12 +21,12 @@ class SearchTrackUseCase(private val trackSearchRepository: TrackSearchRepositor
             val trackList = trackSearchRepository.searchTrack(trackName)
             if(Thread.currentThread().isInterrupted) return@submit
             when (trackList) {
-                is Resource.Success -> consumer.accept(ConsumerData.Data(trackList.data))
+                is Resource.Success -> consumer.consume(ConsumerData.Data(trackList.data))
 
-                is Resource.Error -> consumer.accept(ConsumerData.Error())
+                is Resource.Error -> consumer.consume(ConsumerData.Error())
 
                 is Resource.InternetConnectionError -> {
-                    consumer.accept(ConsumerData.InternetConnectionError())
+                    consumer.consume(ConsumerData.InternetConnectionError())
                 }
             }
         }

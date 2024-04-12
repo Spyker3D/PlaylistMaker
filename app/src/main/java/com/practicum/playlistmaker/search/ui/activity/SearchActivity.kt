@@ -7,46 +7,33 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.player.ui.activity.AudioplayerActivity
 import com.practicum.playlistmaker.player.ui.activity.KEY_SELECTED_TRACK_DETAILS
 import com.practicum.playlistmaker.search.ui.entities.SearchState
+import com.practicum.playlistmaker.search.ui.entities.Track
 import com.practicum.playlistmaker.search.ui.viewModel.TrackSearchViewModel
 
 private const val KEY_INPUT_TEXT = "INPUT_TEXT"
-private const val KEY_SEARCH_TRACKLIST = "TRACKLIST_SEARCH"
 private const val TRACK_CLICK_DEBOUNCE_DELAY = 1000L
 
 class SearchActivity : AppCompatActivity() {
 
-    private var text: String = ""
     private var isClickAllowed = true
 
     private val handler = Handler(Looper.getMainLooper())
     private val isClickAllowedRunnable = Runnable { isClickAllowed = true }
 
+    private lateinit var binding: ActivitySearchBinding
     private lateinit var trackSearchAdapter: TrackAdapter
     private lateinit var trackHistoryAdapter: TrackAdapter
-    private lateinit var binding: ActivitySearchBinding
-    private lateinit var updateButton: Button
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var imagePlaceholder: ImageView
-    private lateinit var textPlaceholder: TextView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var youSearchedText: TextView
-
     private lateinit var viewModel: TrackSearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,15 +46,8 @@ class SearchActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        imagePlaceholder = binding.imagePlaceholder
-        textPlaceholder = binding.textPlaceholder
-        progressBar = binding.progressCircular
-
-        recyclerView = binding.searchRecyclerView
-        recyclerView.layoutManager =
+        binding.searchRecyclerView.layoutManager =
             LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
-
-        youSearchedText = binding.youSearchedText
 
         viewModel = ViewModelProvider(
             this,
@@ -75,17 +55,17 @@ class SearchActivity : AppCompatActivity() {
         )[TrackSearchViewModel::class.java]
 
         trackHistoryAdapter = TrackAdapter(
-            trackList = viewModel.getHistoryList(),
-            onTrackClickListener = { setOnTrackClickListenerLogic(it) },
+            trackList = emptyList(), // historyList,
+            onTrackClickListener = { addToHistoryAndSwitchToAudioPlayer(it) },
             onActionButtonClickListener = {
-                setupClearHistoryButtonListener(it, youSearchedText)
+                setupClearHistoryButtonListener(it, binding.youSearchedText)
             }
         )
 
         trackSearchAdapter = TrackAdapter(emptyList(), onTrackClickListener = {
-            setOnTrackClickListenerLogic(it)
+            addToHistoryAndSwitchToAudioPlayer(it)
         })
-        recyclerView.adapter = trackSearchAdapter
+        binding.searchRecyclerView.adapter = trackSearchAdapter
 
         val inputEditText = binding.inputEditText
 
@@ -97,29 +77,14 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 binding.clearIcon.isVisible = !s.isNullOrEmpty()
-                text = inputEditText.text.toString()  // нужно ли?
-
-                val showHistory =
-                    inputEditText.hasFocus() && s?.isEmpty() == true && !trackHistoryAdapter.isEmpty()
-
-                recyclerView.adapter = if (showHistory) trackHistoryAdapter else trackSearchAdapter
-                if (showHistory) viewModel.showHistoryList()
-                youSearchedText.isVisible = showHistory
-
-                if (s?.isNotBlank() == true) {
-                    viewModel.searchDebounce(changedText = s.toString(), false)
-                } else {
-                    viewModel.removeCallbacks()
-                    trackSearchAdapter.clearList()
-                }
+                viewModel.onTextChanged(s?.toString(), binding.inputEditText.hasFocus())
             }
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
-        viewModel.observeState().observe(this) { render(it) }
+        viewModel.stateLiveData.observe(this) { render(it) }
 
-        updateButton = binding.buttonUpdate
-        updateButton.setOnClickListener {
+        binding.buttonUpdate.setOnClickListener {
             viewModel.searchDebounce(
                 changedText = inputEditText.text.toString(),
                 forceSearch = true
@@ -127,13 +92,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState != null) {
-            text = savedInstanceState.getString(KEY_INPUT_TEXT).toString()
-            inputEditText.setText(text)
-            trackSearchAdapter.updateList {
-                savedInstanceState.getParcelableArrayList(
-                    KEY_SEARCH_TRACKLIST
-                ) ?: mutableListOf()
-            }
+            inputEditText.setText(savedInstanceState.getString(KEY_INPUT_TEXT))
         }
 
         val imm: InputMethodManager =
@@ -144,65 +103,75 @@ class SearchActivity : AppCompatActivity() {
         }
 
         inputEditText.setOnFocusChangeListener { _, hasFocus ->
-            setOnFocusChangeListenerLogic(
-                hasFocus,
-                inputEditText,
-                youSearchedText
-            )
+            viewModel.onTextChanged(binding.inputEditText.text.toString(), hasFocus)
         }
     }
 
     private fun render(state: SearchState) {
+        binding.searchRecyclerView.adapter = when (state) {
+            is SearchState.Content -> trackSearchAdapter
+            is SearchState.HistoryListPresentation -> trackHistoryAdapter.apply {
+                updateList { state.historyTrackList }
+            }
+            else -> null
+        }
         when (state) {
             is SearchState.Loading -> showLoading()
             is SearchState.Content -> showContent(state.trackList)
-            is SearchState.Error -> showError(state.errorMessage)
+            is SearchState.Error -> showError(state, state.errorMessage)
+            is SearchState.InternetConnectionError -> showError(state, state.errorMessage)
             is SearchState.Empty -> showEmpty(state.message)
             is SearchState.HistoryListPresentation -> showContent(state.historyTrackList)
         }
     }
 
     private fun showLoading() {
-        textPlaceholder.isVisible = false
-        imagePlaceholder.isVisible = false
-        updateButton.isVisible = false
-        recyclerView.isVisible = false
-        progressBar.isVisible = true
-        youSearchedText.isVisible = false
+        binding.textPlaceholder.isVisible = false
+        binding.imagePlaceholder.isVisible = false
+        binding.buttonUpdate.isVisible = false
+        binding.searchRecyclerView.isVisible = false
+        binding.progressCircular.isVisible = true
+        binding.youSearchedText.isVisible = false
     }
 
-    private fun showError(errorMessage: String) {
-        progressBar.isVisible = false
-        textPlaceholder.isVisible = true
-        textPlaceholder.text = errorMessage
-        imagePlaceholder.isVisible = true
+    private fun showError(state: SearchState, errorMessage: String) {
+        binding.progressCircular.isVisible = false
+        binding.textPlaceholder.isVisible = true
+        binding.textPlaceholder.text = errorMessage
+        binding.imagePlaceholder.isVisible = true
         setImagePlaceholder(R.drawable.search_error_icon)
-        updateButton.isVisible = false
-        recyclerView.isVisible = false
-        youSearchedText.isVisible = false
+        binding.buttonUpdate.isVisible = state is SearchState.InternetConnectionError
+        binding.searchRecyclerView.isVisible = false
+        binding.youSearchedText.isVisible = false
     }
 
     private fun showEmpty(emptyMessage: String) {
-        progressBar.isVisible = false
-        textPlaceholder.isVisible = true
-        textPlaceholder.text = emptyMessage
-        imagePlaceholder.isVisible = true
+        binding.progressCircular.isVisible = false
+        binding.textPlaceholder.isVisible = true
+        binding.textPlaceholder.text = emptyMessage
+        binding.imagePlaceholder.isVisible = true
         setImagePlaceholder(R.drawable.not_found_icon)
-        updateButton.isVisible = false
-        recyclerView.isVisible = false
-        youSearchedText.isVisible = false
+        binding.buttonUpdate.isVisible = false
+        binding.searchRecyclerView.isVisible = false
+        binding.youSearchedText.isVisible = false
     }
 
-    private fun showContent(trackList: List<TrackInfo>) {
-        progressBar.isVisible = false
-        textPlaceholder.isVisible = false
-        imagePlaceholder.isVisible = false
-        updateButton.isVisible = false
-        recyclerView.isVisible = true
-        if (recyclerView.adapter == trackSearchAdapter) {
+    private fun showContent(trackList: List<Track>) {
+        binding.progressCircular.isVisible = false
+        binding.textPlaceholder.isVisible = false
+        binding.imagePlaceholder.isVisible = false
+        binding.buttonUpdate.isVisible = false
+        binding.searchRecyclerView.isVisible = true
+        if (binding.searchRecyclerView.adapter == trackSearchAdapter) {
             trackSearchAdapter.updateList { trackList }
         } else {
-            trackHistoryAdapter.updateList { trackList }
+            if (trackList.isNotEmpty() && binding.inputEditText.hasFocus()) {
+                binding.youSearchedText.isVisible = true
+                trackHistoryAdapter.updateList { trackList }
+            } else {
+                binding.youSearchedText.isVisible = false
+                binding.searchRecyclerView.isVisible = false
+            }
         }
     }
 
@@ -213,26 +182,26 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(KEY_INPUT_TEXT, text)
+        outState.putString(KEY_INPUT_TEXT, binding.inputEditText.text?.toString())
     }
 
     private fun setImagePlaceholder(image: Int) {
         when (image) {
             android.R.color.transparent -> {
-                imagePlaceholder.isVisible = false
-                updateButton.isVisible = false
+                binding.imagePlaceholder.isVisible = false
+                binding.buttonUpdate.isVisible = false
             }
 
             R.drawable.search_error_icon -> {
-                imagePlaceholder.isVisible = true
-                imagePlaceholder.setImageResource(image)
-                updateButton.isVisible = true
+                binding.imagePlaceholder.isVisible = true
+                binding.imagePlaceholder.setImageResource(image)
+                binding.buttonUpdate.isVisible = true
             }
 
             else -> {
-                imagePlaceholder.isVisible = true
-                imagePlaceholder.setImageResource(image)
-                updateButton.isVisible = false
+                binding.imagePlaceholder.isVisible = true
+                binding.imagePlaceholder.setImageResource(image)
+                binding.buttonUpdate.isVisible = false
             }
         }
     }
@@ -243,26 +212,14 @@ class SearchActivity : AppCompatActivity() {
     ) {
         trackAdapter.clearList()
         viewModel.clearHistoryList()
-        recyclerView.adapter = trackSearchAdapter
+        binding.searchRecyclerView.adapter = trackSearchAdapter
         youSearchedText.isVisible = false
         trackSearchAdapter.clearList()
     }
 
-    private fun setOnFocusChangeListenerLogic(
-        hasFocus: Boolean,
-        inputEditText: EditText,
-        youSearchedText: TextView,
-    ) {
-        val showHistory =
-            hasFocus && inputEditText.text.isEmpty() && !trackHistoryAdapter.isEmpty()
-        recyclerView.adapter = if (showHistory) trackHistoryAdapter else trackSearchAdapter
-        youSearchedText.isVisible = showHistory
-    }
-
-    private fun setOnTrackClickListenerLogic(track: TrackInfo) {
-        if (recyclerView.adapter == trackSearchAdapter) {
+    private fun addToHistoryAndSwitchToAudioPlayer(track: Track) {
+        if (binding.searchRecyclerView.adapter == trackSearchAdapter) {
             viewModel.addTrackToHistoryList(track)
-            trackHistoryAdapter.updateList { viewModel.getHistoryList() }
         }
         if (clickDebounce()) {
             viewModel.saveSelectedTrack(track)
@@ -274,7 +231,6 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setClearIconOnClickListenerLogic(inputEditText: EditText, imm: InputMethodManager) {
         handler.removeCallbacks(isClickAllowedRunnable)
-
         inputEditText.setText("")
         imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
         if (trackSearchAdapter.trackList.isNotEmpty()) {

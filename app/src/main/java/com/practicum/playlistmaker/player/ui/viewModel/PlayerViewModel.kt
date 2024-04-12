@@ -12,25 +12,27 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
+import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
 import com.practicum.playlistmaker.player.domain.interactor.PlayerState
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
+import com.practicum.playlistmaker.search.ui.entities.Track
 
 class PlayerViewModel(
     application: Application,
-    private val selectedTrack: TrackInfo,
+    private val selectedTrack: Track,
+    private val audioPlayerInteractor: AudioPlayerInteractor
 ) :
     AndroidViewModel(application) {
 
     companion object {
         const val UPDATE_PLAY_PROGRESS_DEBOUNCE_DELAY = 300L
 
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
+        fun getViewModelFactory(selectedTrack: Track): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val selectedTrackInteractor = Creator.provideSelectedTrackInteractor()
-                val selectedTrack = selectedTrackInteractor.getSelectedTrack()
                 PlayerViewModel(
-                    this[APPLICATION_KEY] as Application,
-                    selectedTrack
+                    application = this[APPLICATION_KEY] as Application,
+                    selectedTrack = selectedTrack,
+                    audioPlayerInteractor = Creator.provideAudioPlayerInteractor()
                 )
             }
         }
@@ -44,7 +46,6 @@ class PlayerViewModel(
 
     private var initialized: Boolean = false
 
-    private val audioPlayerInteractor by lazy { Creator.provideAudioPlayerInteractor() }
     private val handler = Handler(Looper.getMainLooper())
 
     private val replayProgressRunnable = object : Runnable {
@@ -68,6 +69,7 @@ class PlayerViewModel(
 
                 override fun onCompletion() {
                     handler.removeCallbacks(replayProgressRunnable)
+                    progressTimeLiveDataMutable.postValue(getProgressTime())
                     listener.onCompletion()
                 }
             })

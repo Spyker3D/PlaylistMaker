@@ -6,10 +6,11 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.TrackViewBinding
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
+import com.practicum.playlistmaker.search.ui.entities.Track
 
 class TrackViewHolder(private val binding: TrackViewBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(track: TrackInfo) {
+    fun bind(track: Track) {
         binding.trackName.text = track.trackName
         binding.bandName.text = track.artistName
         binding.trackDuration.text = track.trackTimeMillisFormatted

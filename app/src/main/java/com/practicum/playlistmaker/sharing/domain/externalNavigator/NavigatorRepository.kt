@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.sharing.domain.ExternalNavigator
+package com.practicum.playlistmaker.sharing.domain.externalNavigator
 
 
 interface NavigatorRepository {

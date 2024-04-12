@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.search.data.repository
 
+import android.util.Log
 import com.practicum.playlistmaker.search.data.dto.TrackSearchRequest
 import com.practicum.playlistmaker.search.data.dto.TracksSearchResponse
 import com.practicum.playlistmaker.search.data.mapper.TrackMapper
@@ -12,21 +13,18 @@ class TrackSearchRepositoryImpl(private val networkClient: NetworkClient) : Trac
     override fun searchTrack(request: String): Resource<List<TrackInfo>> {
         val response = networkClient.doRequest(TrackSearchRequest(request))
 
-        if (response is TracksSearchResponse) {
-            return when (response.resultCode) {
-                -1 -> Resource.InternetConnectionError()
+        return when (response.resultCode) {
+            -1 -> Resource.InternetConnectionError()
 
-                200 -> {
-                    val trackList: List<TrackInfo> = TrackMapper.mapToDomain((response).results)
-                    if (response.results.isNotEmpty()) {
-                        Resource.Success(trackList)
-                    } else Resource.Success(listOf<TrackInfo>())
-                }
-
-                else -> Resource.Error()
+            200 -> {
+                val trackList: List<TrackInfo> =
+                    TrackMapper.mapToDomain((response as TracksSearchResponse).results)
+                if ((response as TracksSearchResponse).results.isNotEmpty()) {
+                    Resource.Success(trackList)
+                } else Resource.Success(listOf<TrackInfo>())
             }
-        } else {
-            return Resource.Error()
+
+            else -> Resource.Error()
         }
     }
 }

@@ -14,11 +14,25 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.search.domain.consumer.Consumer
 import com.practicum.playlistmaker.search.domain.consumer.ConsumerData
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
+import com.practicum.playlistmaker.search.domain.interactor.GetHistoryTrackUseCase
+import com.practicum.playlistmaker.search.domain.interactor.SaveHistoryTrackUseCase
+import com.practicum.playlistmaker.search.domain.interactor.SaveSelectedTrackUseCase
+import com.practicum.playlistmaker.search.domain.interactor.SearchTrackUseCase
 import com.practicum.playlistmaker.search.ui.entities.SearchState
+import com.practicum.playlistmaker.search.ui.entities.Track
+import com.practicum.playlistmaker.search.ui.mapper.TrackPresentationMapper
 
-class TrackSearchViewModel(application: Application) : AndroidViewModel(application) {
+class TrackSearchViewModel(
+    application: Application,
+    private val searchTrackUseCase: SearchTrackUseCase,
+    private val saveHistoryTrackUseCase: SaveHistoryTrackUseCase,
+    private val getHistoryTrackUseCase: GetHistoryTrackUseCase,
+    private val saveSelectedTrackUseCase: SaveSelectedTrackUseCase,
+) :
+    AndroidViewModel(application) {
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
@@ -26,18 +40,21 @@ class TrackSearchViewModel(application: Application) : AndroidViewModel(applicat
 
         fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                TrackSearchViewModel(this[APPLICATION_KEY] as Application)
+
+                TrackSearchViewModel(
+                    application = this[APPLICATION_KEY] as Application,
+                    searchTrackUseCase = Creator.provideSearchTrackUseCase(),
+                    saveHistoryTrackUseCase = Creator.provideSaveHistoryTrackUseCase(),
+                    getHistoryTrackUseCase = Creator.provideGetHistoryTrackUseCase(),
+                    saveSelectedTrackUseCase = Creator.provideSelectedTrackInteractor()
+                )
             }
         }
     }
 
-    private val searchTrackUseCase by lazy { Creator.provideSearchTrackUseCase() }
-    private val saveHistoryTrackUseCase by lazy { Creator.provideSaveHistoryTrackUseCase() }
-    private val getHistoryTrackUseCase by lazy { Creator.provideGetHistoryTrackUseCase() }
-    private val selectedTrackInteractor by lazy { Creator.provideSelectedTrackInteractor() }
-
-    private val stateLiveData = MutableLiveData<SearchState>()
-    fun observeState(): LiveData<SearchState> = stateLiveData
+    private val _stateLiveData =
+        MutableLiveData<SearchState>(SearchState.HistoryListPresentation(getHistoryList()))
+    val stateLiveData: LiveData<SearchState> = _stateLiveData
 
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
@@ -74,57 +91,64 @@ class TrackSearchViewModel(application: Application) : AndroidViewModel(applicat
         }
 
         searchTrackUseCase.execute(
-            trackName = newSearchText
-        ) { data ->
-            when (data) {
-                is ConsumerData.Error -> {
-                    renderState(
-                        SearchState.Error(
-                            getApplication<Application>().getString(
-                                R.string.server_error
-                            )
-                        )
-                    )
-                }
-
-                is ConsumerData.InternetConnectionError -> {
-                    renderState(
-                        SearchState.Error(
-                            getApplication<Application>().getString(
-                                R.string.search_error_message
-                            )
-                        )
-                    )
-                }
-
-                is ConsumerData.Data -> {
-                    val trackListFound = data.value ?: listOf<TrackInfo>()
-                    if (trackListFound.isEmpty()) {
-                        renderState(
-                            SearchState.Error(
-                                getApplication<Application>().getString(
-                                    R.string.nothing_found
+            trackName = newSearchText,
+            object : Consumer<List<TrackInfo>> {
+                override fun consume(data: ConsumerData<List<TrackInfo>>) {
+                    when (data) {
+                        is ConsumerData.Error -> {
+                            renderState(
+                                SearchState.Error(
+                                    getApplication<Application>().getString(
+                                        R.string.server_error
+                                    )
                                 )
                             )
-                        )
-                    } else {
-                        renderState(SearchState.Content(trackListFound))
+                        }
+
+                        is ConsumerData.InternetConnectionError -> {
+                            renderState(
+                                SearchState.InternetConnectionError(
+                                    getApplication<Application>().getString(
+                                        R.string.search_error_message
+                                    )
+                                )
+                            )
+                        }
+
+                        is ConsumerData.Data -> {
+                            val trackListFound = data.value ?: listOf<TrackInfo>()
+                            if (trackListFound.isEmpty()) {
+                                renderState(
+                                    SearchState.Empty(
+                                        getApplication<Application>().getString(
+                                            R.string.nothing_found
+                                        )
+                                    )
+                                )
+                            } else {
+                                renderState(
+                                    SearchState.Content(
+                                        TrackPresentationMapper.mapToPresentation(trackListFound)
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }
-        }
+        )
     }
 
     private fun renderState(state: SearchState) {
-        stateLiveData.postValue(state)
+        _stateLiveData.postValue(state)
     }
 
-    fun addTrackToHistoryList(trackToSave: TrackInfo) {
+    fun addTrackToHistoryList(trackToSave: Track) {
         val filteredList = getHistoryList() - trackToSave
         val updatedList = listOf(trackToSave) + filteredList
         val finalUpdatedList =
             if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
-        saveHistoryTrackUseCase.execute(finalUpdatedList)
+        saveHistoryTrackUseCase.execute(TrackPresentationMapper.mapToDomain(finalUpdatedList))
     }
 
     fun showHistoryList() {
@@ -132,21 +156,33 @@ class TrackSearchViewModel(application: Application) : AndroidViewModel(applicat
         renderState(SearchState.HistoryListPresentation(historyList))
     }
 
-    fun getHistoryList(): List<TrackInfo> {
-        return getHistoryTrackUseCase.execute()
+    fun onTextChanged(s: String?, editTexthasFocus: Boolean) {
+
+        if (s?.isNotBlank() == true) {
+            searchDebounce(changedText = s, forceSearch = false)
+        } else if (editTexthasFocus) {
+            removeCallbacks()
+            renderState(SearchState.HistoryListPresentation(getHistoryList()))
+        }
     }
 
-    fun removeCallbacks() {
+    private fun getHistoryList(): List<Track> {
+        return TrackPresentationMapper.mapToPresentation(getHistoryTrackUseCase.execute())
+    }
+
+    private fun removeCallbacks() {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
     fun clearHistoryList() {
-        var historyList = listOf<TrackInfo>()
+        val historyList = listOf<TrackInfo>()
         saveHistoryTrackUseCase.execute(historyList)
     }
 
-    fun saveSelectedTrack(track: TrackInfo) {
-        selectedTrackInteractor.saveSelectedTrack(track)
+    fun saveSelectedTrack(track: Track) {
+        this.saveSelectedTrackUseCase.saveSelectedTrack(
+            TrackPresentationMapper.mapToDomain(listOf(track)).first()
+        )
     }
 
     override fun onCleared() {
