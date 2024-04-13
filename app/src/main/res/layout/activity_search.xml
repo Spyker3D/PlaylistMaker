@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".presentation.ui.searchActivity.SearchActivity">
+    tools:context=".search.ui.activity.SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_search"
@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/search"
             android:imeOptions="actionDone"
+            android:textCursorDrawable="@drawable/cursor"
             android:maxLines="1"
             android:paddingHorizontal="12dp"
             android:paddingVertical="10dp" />
