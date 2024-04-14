@@ -20,9 +20,4 @@ class TrackStorageRepositoryImpl(private val trackStorage: TrackStorage) : Track
         val selectedTrackDto = TrackMapper.mapToStorage(listOf(selectedTrack))
         trackStorage.saveSelectedTrack(selectedTrackDto.first())
     }
-
-    override fun getSelectedTrack(): TrackInfo {
-        val selectedTrack = trackStorage.getSelectedTrack()
-        return TrackMapper.mapToDomain(listOf(selectedTrack)).first()
-    }
 }

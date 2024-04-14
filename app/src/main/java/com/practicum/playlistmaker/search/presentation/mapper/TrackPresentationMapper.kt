@@ -1,7 +1,7 @@
-package com.practicum.playlistmaker.search.ui.mapper
+package com.practicum.playlistmaker.search.presentation.mapper
 
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
-import com.practicum.playlistmaker.search.ui.entities.Track
+import com.practicum.playlistmaker.search.presentation.entities.Track
 
 object TrackPresentationMapper {
 

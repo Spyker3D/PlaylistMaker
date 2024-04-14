@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.ui.activity
+package com.practicum.playlistmaker.search.presentation.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,15 +11,14 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.player.ui.activity.AudioplayerActivity
-import com.practicum.playlistmaker.player.ui.activity.KEY_SELECTED_TRACK_DETAILS
-import com.practicum.playlistmaker.search.ui.entities.SearchState
-import com.practicum.playlistmaker.search.ui.entities.Track
-import com.practicum.playlistmaker.search.ui.viewModel.TrackSearchViewModel
+import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
+import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAILS
+import com.practicum.playlistmaker.search.presentation.entities.SearchState
+import com.practicum.playlistmaker.search.presentation.entities.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val KEY_INPUT_TEXT = "INPUT_TEXT"
 private const val TRACK_CLICK_DEBOUNCE_DELAY = 1000L
@@ -34,7 +33,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
     private lateinit var trackSearchAdapter: TrackAdapter
     private lateinit var trackHistoryAdapter: TrackAdapter
-    private lateinit var viewModel: TrackSearchViewModel
+    private val viewModel: TrackSearchViewModel by viewModel<TrackSearchViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,11 +47,6 @@ class SearchActivity : AppCompatActivity() {
 
         binding.searchRecyclerView.layoutManager =
             LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
-
-        viewModel = ViewModelProvider(
-            this,
-            TrackSearchViewModel.getViewModelFactory()
-        )[TrackSearchViewModel::class.java]
 
         trackHistoryAdapter = TrackAdapter(
             trackList = emptyList(), // historyList,

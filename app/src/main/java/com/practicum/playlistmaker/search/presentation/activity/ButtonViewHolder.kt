@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.ui.activity
+package com.practicum.playlistmaker.search.presentation.activity
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

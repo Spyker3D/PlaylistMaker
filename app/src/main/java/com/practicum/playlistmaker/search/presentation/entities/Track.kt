@@ -1,11 +1,11 @@
-package com.practicum.playlistmaker.search.ui.entities
+package com.practicum.playlistmaker.search.presentation.entities
 
 import android.os.Parcelable
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Track (
+class Track(
     val trackId: Int,
     val trackName: String?,
     val artistName: String?,
@@ -20,14 +20,10 @@ data class Track (
     val previewUrl: String?,
     val artworkUrlLarge: String?,
 ) : Parcelable {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TrackInfo) return false
-        if (this.trackId != (other as TrackInfo).trackId) return false
-        return true
-    }
+    override fun equals(other: Any?): Boolean =
+        this === other || other is Track && trackId == other.trackId
 
     override fun hashCode(): Int {
-        return trackId.hashCode()
+        return trackId
     }
 }

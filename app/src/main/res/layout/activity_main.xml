@@ -8,7 +8,7 @@
     android:background="?attr/colorSecondary"
     android:paddingHorizontal="16dp"
     android:paddingBottom="28dp"
-    tools:context=".main.ui.MainActivity">
+    tools:context=".main.presentation.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"

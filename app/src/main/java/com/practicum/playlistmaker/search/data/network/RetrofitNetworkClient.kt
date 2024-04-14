@@ -11,18 +11,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 const val ITUNES_URL = "https://itunes.apple.com"
 
-class RetrofitNetworkClient(private val context: Context) : NetworkClient {
-
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(ITUNES_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-    private val iTunesApiService: ItunesApiService by lazy {
-        retrofit.create(ItunesApiService::class.java)
-    }
+class RetrofitNetworkClient(
+    private val context: Context,
+    private val iTunesApiService: ItunesApiService,
+) : NetworkClient {
 
     override fun doRequest(dto: Any?): NetworkResponse {
         if (!isConnected()) {
