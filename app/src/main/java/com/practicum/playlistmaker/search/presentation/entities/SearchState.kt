@@ -1,6 +1,4 @@
-package com.practicum.playlistmaker.search.ui.entities
-
-import com.practicum.playlistmaker.search.domain.entities.TrackInfo
+package com.practicum.playlistmaker.search.presentation.entities
 
 sealed interface SearchState {
 

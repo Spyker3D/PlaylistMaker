@@ -1,12 +1,11 @@
-package com.practicum.playlistmaker.search.ui.activity
+package com.practicum.playlistmaker.search.presentation.activity
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.databinding.ClearHistoryButtonBinding
 import com.practicum.playlistmaker.databinding.TrackViewBinding
-import com.practicum.playlistmaker.search.domain.entities.TrackInfo
-import com.practicum.playlistmaker.search.ui.entities.Track
+import com.practicum.playlistmaker.search.presentation.entities.Track
 
 private const val TYPE_TRACK = 1
 private const val TYPE_BUTTON = 2

@@ -1,14 +1,9 @@
-package com.practicum.playlistmaker.settings.ui.viewModel
+package com.practicum.playlistmaker.settings.presentation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.App
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.settings.domain.interactor.SettingsInteractor
 import com.practicum.playlistmaker.sharing.interactor.NavigatorInteractor
 
@@ -17,20 +12,6 @@ class SettingsViewModel(
     private val navigatorInteractor: NavigatorInteractor,
     private val settingsInteractor: SettingsInteractor,
 ) : AndroidViewModel(application) {
-
-    companion object {
-
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-
-                SettingsViewModel(
-                    application = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application,
-                    navigatorInteractor = Creator.provideNavigatorInteractor(),
-                    settingsInteractor = Creator.provideSettingsInteractor()
-                )
-            }
-        }
-    }
 
     private var isNightModeOnMutableLiveData = MutableLiveData<Boolean>()
     val isNightModeOnLiveData: LiveData<Boolean> = isNightModeOnMutableLiveData

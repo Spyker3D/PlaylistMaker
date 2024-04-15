@@ -10,5 +10,4 @@ interface TrackStorageRepository {
 
     fun saveSelectedTrack(selectedTrack: TrackInfo)
 
-    fun getSelectedTrack(): TrackInfo
 }

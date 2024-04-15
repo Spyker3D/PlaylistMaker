@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.player.ui.viewModel
+package com.practicum.playlistmaker.player.presentation
 
 import android.app.Application
 import android.os.Handler
@@ -6,40 +6,25 @@ import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.creator.Creator
+import androidx.lifecycle.SavedStateHandle
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
 import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
 import com.practicum.playlistmaker.player.domain.interactor.PlayerState
-import com.practicum.playlistmaker.search.domain.entities.TrackInfo
-import com.practicum.playlistmaker.search.ui.entities.Track
+import com.practicum.playlistmaker.search.presentation.entities.Track
 
 class PlayerViewModel(
+    savedStateHandle: SavedStateHandle,
     application: Application,
-    private val selectedTrack: Track,
-    private val audioPlayerInteractor: AudioPlayerInteractor
+    private val audioPlayerInteractor: AudioPlayerInteractor,
 ) :
     AndroidViewModel(application) {
 
-    companion object {
-        const val UPDATE_PLAY_PROGRESS_DEBOUNCE_DELAY = 300L
+    private val selectedTrack =
+        savedStateHandle.get<Track>(KEY_SELECTED_TRACK_DETAILS)!!
 
-        fun getViewModelFactory(selectedTrack: Track): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(
-                    application = this[APPLICATION_KEY] as Application,
-                    selectedTrack = selectedTrack,
-                    audioPlayerInteractor = Creator.provideAudioPlayerInteractor()
-                )
-            }
-        }
-    }
-
-    private val isPlayingMutable = MutableLiveData<Boolean>(false) // Boolean
-    val isPlaying: LiveData<Boolean> = isPlayingMutable
+    private val _isPlaying =
+        MutableLiveData<ActivityPlayerState>(ActivityPlayerState.Idle(selectedTrack))
+    val isPlaying: LiveData<ActivityPlayerState> = _isPlaying
 
     private val progressTimeLiveDataMutable = MutableLiveData<Int>()
     val progressTimeLiveData: LiveData<Int> = progressTimeLiveDataMutable
@@ -55,7 +40,7 @@ class PlayerViewModel(
         }
     }
 
-    fun preparePlayer(listener: AudioPlayerStatesListener) {
+    fun preparePlayer() {
 
         if (initialized) return
 
@@ -63,14 +48,12 @@ class PlayerViewModel(
         audioPlayerInteractor.preparePlayer(
             selectedTrack.previewUrl.toString(),
             object : AudioPlayerStatesListener {
-                override fun onPrepared() {
-                    listener.onPrepared()
-                }
+                override fun onPrepared() = Unit
 
                 override fun onCompletion() {
                     handler.removeCallbacks(replayProgressRunnable)
                     progressTimeLiveDataMutable.postValue(getProgressTime())
-                    listener.onCompletion()
+                    _isPlaying.value = ActivityPlayerState.Idle(selectedTrack)
                 }
             })
     }
@@ -80,13 +63,13 @@ class PlayerViewModel(
             PlayerState.STATE_PLAYING -> {
                 audioPlayerInteractor.pausePlayer()
                 handler.removeCallbacks(replayProgressRunnable)
-                isPlayingMutable.postValue(false)
+                _isPlaying.postValue(ActivityPlayerState.IsPaused(selectedTrack))
             }
 
             PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
                 audioPlayerInteractor.startPlayer()
                 handler.post(replayProgressRunnable)
-                isPlayingMutable.postValue(true)
+                _isPlaying.postValue(ActivityPlayerState.IsPlaying(selectedTrack))
             }
 
             PlayerState.STATE_DEFAULT -> Unit
@@ -96,7 +79,7 @@ class PlayerViewModel(
     fun pausePlayer() {
         audioPlayerInteractor.pausePlayer()
         handler.removeCallbacks(replayProgressRunnable)
-        isPlayingMutable.postValue(false)
+        _isPlaying.postValue(ActivityPlayerState.IsPaused(selectedTrack))
     }
 
     fun getProgressTime(): Int {
@@ -106,5 +89,9 @@ class PlayerViewModel(
     override fun onCleared() {
         audioPlayerInteractor.releasePlayer()
         handler.removeCallbacks(replayProgressRunnable)
+    }
+
+    companion object {
+        const val UPDATE_PLAY_PROGRESS_DEBOUNCE_DELAY = 300L
     }
 }

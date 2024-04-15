@@ -10,5 +10,4 @@ interface TrackStorage {
 
     fun saveSelectedTrack(selectedTrack: TrackDto)
 
-    fun getSelectedTrack(): TrackDto
 }

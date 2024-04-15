@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.ui.viewModel
+package com.practicum.playlistmaker.search.presentation.activity
 
 import android.app.Application
 import android.os.Build
@@ -8,48 +8,30 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.search.domain.consumer.Consumer
 import com.practicum.playlistmaker.search.domain.consumer.ConsumerData
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.search.domain.interactor.GetHistoryTrackUseCase
 import com.practicum.playlistmaker.search.domain.interactor.SaveHistoryTrackUseCase
-import com.practicum.playlistmaker.search.domain.interactor.SaveSelectedTrackUseCase
+import com.practicum.playlistmaker.search.domain.interactor.SelectedTrackUseCase
 import com.practicum.playlistmaker.search.domain.interactor.SearchTrackUseCase
-import com.practicum.playlistmaker.search.ui.entities.SearchState
-import com.practicum.playlistmaker.search.ui.entities.Track
-import com.practicum.playlistmaker.search.ui.mapper.TrackPresentationMapper
+import com.practicum.playlistmaker.search.presentation.entities.SearchState
+import com.practicum.playlistmaker.search.presentation.entities.Track
+import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper
 
 class TrackSearchViewModel(
     application: Application,
     private val searchTrackUseCase: SearchTrackUseCase,
     private val saveHistoryTrackUseCase: SaveHistoryTrackUseCase,
     private val getHistoryTrackUseCase: GetHistoryTrackUseCase,
-    private val saveSelectedTrackUseCase: SaveSelectedTrackUseCase,
+    private val selectedTrackUseCase: SelectedTrackUseCase,
 ) :
     AndroidViewModel(application) {
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
-
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-
-                TrackSearchViewModel(
-                    application = this[APPLICATION_KEY] as Application,
-                    searchTrackUseCase = Creator.provideSearchTrackUseCase(),
-                    saveHistoryTrackUseCase = Creator.provideSaveHistoryTrackUseCase(),
-                    getHistoryTrackUseCase = Creator.provideGetHistoryTrackUseCase(),
-                    saveSelectedTrackUseCase = Creator.provideSelectedTrackInteractor()
-                )
-            }
-        }
     }
 
     private val _stateLiveData =
@@ -151,11 +133,6 @@ class TrackSearchViewModel(
         saveHistoryTrackUseCase.execute(TrackPresentationMapper.mapToDomain(finalUpdatedList))
     }
 
-    fun showHistoryList() {
-        val historyList = getHistoryList()
-        renderState(SearchState.HistoryListPresentation(historyList))
-    }
-
     fun onTextChanged(s: String?, editTexthasFocus: Boolean) {
 
         if (s?.isNotBlank() == true) {
@@ -180,7 +157,7 @@ class TrackSearchViewModel(
     }
 
     fun saveSelectedTrack(track: Track) {
-        this.saveSelectedTrackUseCase.saveSelectedTrack(
+        this.selectedTrackUseCase.saveSelectedTrack(
             TrackPresentationMapper.mapToDomain(listOf(track)).first()
         )
     }
