@@ -14,27 +14,27 @@ val interactorModule = module {
         AudioPlayerInteractor(audioPlayerRepository = get())
     }
 
-    single {
+    factory {
         SearchTrackUseCase(trackSearchRepository = get())
     }
 
-    single {
+    factory {
         SaveHistoryTrackUseCase(trackStorage = get())
     }
 
-    single {
+    factory {
         GetHistoryTrackUseCase(trackStorage = get())
     }
 
-    single {
+    factory {
         SelectedTrackUseCase(trackStorage = get())
     }
 
-    single {
+    factory {
         NavigatorInteractor(navigatorRepository = get())
     }
 
-    single {
+    factory {
         SettingsInteractor(settingsRepository = get())
     }
 }
