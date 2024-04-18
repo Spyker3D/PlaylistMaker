@@ -34,6 +34,16 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
+    <style name="button_new_playlist" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:backgroundTint">?attr/colorOnPrimary</item>
+        <item name="cornerRadius">54dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/update_button_text_color</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
+
     <style name="ActivitySettingsTextView">
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:textSize">@dimen/settings_and_tracklist_text_size</item>
@@ -92,6 +102,18 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="MediaLibraryTextPlaceholder">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textSize">@dimen/medialibrary_text_placholder</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
+
+    <style name="MediaLibraryTabLayoutTextStyle">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textSize">@dimen/medialibrary_tab_text</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
 </resources>

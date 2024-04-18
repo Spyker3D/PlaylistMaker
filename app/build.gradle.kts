@@ -57,4 +57,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("io.insert-koin:koin-android:3.5.6")
+
+    val fragmentVersion = "1.6.2"
+    implementation("androidx.fragment:fragment-ktx:${fragmentVersion}")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
 }

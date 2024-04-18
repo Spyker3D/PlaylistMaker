@@ -6,4 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".mediaLibrary.presentation.MediaLibraryActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_media_library"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/arrow_back"
+        app:title="@string/media_library"
+        app:titleTextAppearance="@style/ToolbarTitleText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tablayout_medialibrary"
+        />
+    
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tablayout_medialibrary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabTextAppearance="@style/MediaLibraryTabLayoutTextStyle"
+        android:background="?colorSurface"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:tabTextColor="?attr/colorOnPrimary"
+        app:tabIndicatorColor="?attr/colorOnPrimary"
+        app:tabIndicatorFullWidth="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_media_library"
+        app:layout_constraintBottom_toTopOf="@+id/viewpager_medialibrary"
+        />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager_medialibrary"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tablayout_medialibrary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

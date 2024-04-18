@@ -10,6 +10,7 @@
         <item name="colorSecondaryVariant">@color/dark_black</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="android:colorBackground">@color/dark_black</item>
+        <item name="colorSurface">@color/dark_black</item>
 
     </style>
 
