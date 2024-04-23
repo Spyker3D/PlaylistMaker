@@ -116,4 +116,9 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
+    <style name="BottomNavigationViewTextItems">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+    </style>
+
 </resources>

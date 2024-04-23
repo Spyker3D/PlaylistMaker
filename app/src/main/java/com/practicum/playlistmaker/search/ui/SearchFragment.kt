@@ -1,52 +1,61 @@
-package com.practicum.playlistmaker.search.presentation.activity
+package com.practicum.playlistmaker.search.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
 import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAILS
 import com.practicum.playlistmaker.search.presentation.entities.SearchState
 import com.practicum.playlistmaker.search.presentation.entities.Track
+import com.practicum.playlistmaker.search.presentation.viewmodel.TrackSearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val KEY_INPUT_TEXT = "INPUT_TEXT"
 private const val TRACK_CLICK_DEBOUNCE_DELAY = 1000L
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
+
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private var isClickAllowed = true
 
     private val handler = Handler(Looper.getMainLooper())
     private val isClickAllowedRunnable = Runnable { isClickAllowed = true }
 
-    private lateinit var binding: ActivitySearchBinding
     private lateinit var trackSearchAdapter: TrackAdapter
     private lateinit var trackHistoryAdapter: TrackAdapter
     private val viewModel: TrackSearchViewModel by viewModel<TrackSearchViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.toolbarSearch.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.searchRecyclerView.layoutManager =
-            LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
         trackHistoryAdapter = TrackAdapter(
             trackList = emptyList(), // historyList,
@@ -76,7 +85,7 @@ class SearchActivity : AppCompatActivity() {
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
-        viewModel.stateLiveData.observe(this) { render(it) }
+        viewModel.stateLiveData.observe(viewLifecycleOwner) { render(it) }
 
         binding.buttonUpdate.setOnClickListener {
             viewModel.searchDebounce(
@@ -90,7 +99,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val imm: InputMethodManager =
-            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager //OK??????
 
         binding.clearIcon.setOnClickListener {
             setClearIconOnClickListenerLogic(inputEditText, imm)
@@ -169,9 +178,10 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         handler.removeCallbacks(isClickAllowedRunnable)
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -217,7 +227,7 @@ class SearchActivity : AppCompatActivity() {
         }
         if (clickDebounce()) {
             viewModel.saveSelectedTrack(track)
-            val audioplayerIntent = Intent(this, AudioplayerActivity::class.java)
+            val audioplayerIntent = Intent(requireContext(), AudioplayerActivity::class.java)
             audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, track)
             startActivity(audioplayerIntent)
         }

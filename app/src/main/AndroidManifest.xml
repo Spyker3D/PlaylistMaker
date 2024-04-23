@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -17,19 +17,12 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name=".search.presentation.activity.SearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".mediaLibrary.presentation.MediaLibraryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".settings.presentation.SettingsActivity"
-            android:exported="false" />
-        <activity
             android:name=".player.presentation.AudioplayerActivity"
             android:exported="false" />
+
         <activity
-            android:name=".main.presentation.MainActivity"
+            android:name=".root.ui.RootActivity"
+            android:windowSoftInputMode="adjustNothing"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

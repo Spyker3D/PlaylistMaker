@@ -6,15 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".search.presentation.activity.SearchActivity">
+    tools:context="com.practicum.playlistmaker.search.ui.SearchFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:navigationIcon="@drawable/arrow_back"
         app:title="@string/search"
-        app:titleTextAppearance="@style/ToolbarTitleText" />
+        app:titleTextAppearance="@style/ToolbarTitleText"
+        />
+<!--    app:navigationIcon="@drawable/arrow_back"-->
 
     <FrameLayout
         android:id="@+id/edittext_container"
