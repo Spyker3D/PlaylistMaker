@@ -2,11 +2,10 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.main.presentation.MainViewModel
 import com.practicum.playlistmaker.mediaLibrary.presentation.MediaLibraryViewModel
-import com.practicum.playlistmaker.mediaLibrary.presentation.favoritetracks.FavoriteTracksFragment
 import com.practicum.playlistmaker.mediaLibrary.presentation.favoritetracks.FavoriteTracksViewModel
 import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsViewModel
 import com.practicum.playlistmaker.player.presentation.PlayerViewModel
-import com.practicum.playlistmaker.search.presentation.activity.TrackSearchViewModel
+import com.practicum.playlistmaker.search.presentation.viewmodel.TrackSearchViewModel
 import com.practicum.playlistmaker.settings.presentation.SettingsViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel

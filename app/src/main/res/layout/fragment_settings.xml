@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".settings.presentation.SettingsActivity">
+    tools:context="com.practicum.playlistmaker.settings.presentation.SettingsFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarSettings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:navigationIcon="@drawable/arrow_back"
         app:title="@string/settings"
         app:titleTextAppearance="@style/ToolbarTitleText"/>
+<!--    app:navigationIcon="@drawable/arrow_back"-->
 
     <FrameLayout
         android:layout_width="match_parent"

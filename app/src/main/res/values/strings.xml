@@ -30,5 +30,8 @@
     <string name="favorite_tracks_text_placeholder">Ваша медиатека пуста</string>
     <string name="medialibrary_tablayout_tab_1">Избранные треки</string>
     <string name="medialibrary_tablayout_tab_2">Плейлисты</string>
+    <string name="bottom_navigator_search_tab">Поиск</string>
+    <string name="bottom_navigator_medialibrary_tab">Медиатека</string>
+    <string name="bottom_navigator_settings_tab">Настройки</string>
 
 </resources>
