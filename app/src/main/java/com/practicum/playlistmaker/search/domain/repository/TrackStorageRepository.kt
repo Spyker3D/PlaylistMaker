@@ -8,6 +8,4 @@ interface TrackStorageRepository {
 
     fun getHistoryTrackList(): List<TrackInfo>
 
-    fun saveSelectedTrack(selectedTrack: TrackInfo)
-
 }

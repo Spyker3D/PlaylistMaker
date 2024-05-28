@@ -5,32 +5,16 @@ import com.practicum.playlistmaker.player.domain.repository.AudioPlayerRepositor
 
 class AudioPlayerInteractor(private val audioPlayerRepository: AudioPlayerRepository) {
 
-    var audioPlayerState: PlayerState = PlayerState.STATE_DEFAULT
-        private set
-
 
     fun preparePlayer(trackUrl: String, listener: AudioPlayerStatesListener) {
-        audioPlayerState = PlayerState.STATE_PREPARED
-        audioPlayerRepository.preparePlayer(trackUrl, listener = object :
-            AudioPlayerStatesListener {
-            override fun onPrepared() {
-                listener.onPrepared()
-            }
-
-            override fun onCompletion() {
-                audioPlayerState = PlayerState.STATE_PREPARED
-                listener.onCompletion()
-            }
-        })
+        audioPlayerRepository.preparePlayer(trackUrl, listener)
     }
 
     fun startPlayer() {
-        audioPlayerState = PlayerState.STATE_PLAYING
         audioPlayerRepository.startPlayer()
     }
 
     fun pausePlayer() {
-        audioPlayerState = PlayerState.STATE_PAUSED
         audioPlayerRepository.pausePlayer()
     }
 
@@ -40,6 +24,10 @@ class AudioPlayerInteractor(private val audioPlayerRepository: AudioPlayerReposi
 
     fun getProgressTime(): Int {
         return audioPlayerRepository.provideProgressTime()
+    }
+
+    fun mediaPlayerIsPlaying(): Boolean {
+        return audioPlayerRepository.mediaPlayerIsPlaying()
     }
 }
 

@@ -26,7 +26,6 @@ val viewModelModule = module {
             searchTrackUseCase = get(),
             saveHistoryTrackUseCase = get(),
             getHistoryTrackUseCase = get(),
-            selectedTrackUseCase = get() // удалить как лишний
         )
     }
 

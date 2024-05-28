@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.di
 import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
 import com.practicum.playlistmaker.search.domain.interactor.GetHistoryTrackUseCase
 import com.practicum.playlistmaker.search.domain.interactor.SaveHistoryTrackUseCase
-import com.practicum.playlistmaker.search.domain.interactor.SelectedTrackUseCase
 import com.practicum.playlistmaker.search.domain.interactor.SearchTrackUseCase
 import com.practicum.playlistmaker.settings.domain.interactor.SettingsInteractor
 import com.practicum.playlistmaker.sharing.interactor.NavigatorInteractor
@@ -24,10 +23,6 @@ val interactorModule = module {
 
     factory {
         GetHistoryTrackUseCase(trackStorage = get())
-    }
-
-    factory {
-        SelectedTrackUseCase(trackStorage = get())
     }
 
     factory {

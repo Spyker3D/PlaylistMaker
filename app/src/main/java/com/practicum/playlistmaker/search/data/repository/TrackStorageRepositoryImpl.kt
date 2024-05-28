@@ -15,9 +15,4 @@ class TrackStorageRepositoryImpl(private val trackStorage: TrackStorage) : Track
         val historyTrackListToGet = trackStorage.getHistoryTrackList()
         return TrackMapper.mapToDomain(historyTrackListToGet)
     }
-
-    override fun saveSelectedTrack(selectedTrack: TrackInfo) {
-        val selectedTrackDto = TrackMapper.mapToStorage(listOf(selectedTrack))
-        trackStorage.saveSelectedTrack(selectedTrackDto.first())
-    }
 }

@@ -18,8 +18,6 @@ class AudioplayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAudioplayerBinding
 
-    private val dateFormat by lazy { SimpleDateFormat("m:ss", Locale.getDefault()) }
-
     private val viewModel: PlayerViewModel by viewModel<PlayerViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +30,7 @@ class AudioplayerActivity : AppCompatActivity() {
         }
 
         viewModel.progressTimeLiveData.observe(this) {
-            binding.replayProgress.text = dateFormat.format(it)
+            binding.replayProgress.text = it
         }
 
         viewModel.isPlaying.observe(this) {

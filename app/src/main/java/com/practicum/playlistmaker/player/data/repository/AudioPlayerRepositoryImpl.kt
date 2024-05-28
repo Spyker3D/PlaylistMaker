@@ -33,5 +33,9 @@ class AudioPlayerRepositoryImpl() : AudioPlayerRepository {
     override fun provideProgressTime(): Int {
         return mediaPlayer.currentPosition
     }
+
+    override fun mediaPlayerIsPlaying(): Boolean {
+        return mediaPlayer.isPlaying
+    }
 }
 

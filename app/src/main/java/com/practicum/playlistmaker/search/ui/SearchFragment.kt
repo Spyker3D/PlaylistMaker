@@ -14,7 +14,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
@@ -23,10 +25,13 @@ import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAIL
 import com.practicum.playlistmaker.search.presentation.entities.SearchState
 import com.practicum.playlistmaker.search.presentation.entities.Track
 import com.practicum.playlistmaker.search.presentation.viewmodel.TrackSearchViewModel
+import com.practicum.playlistmaker.utils.debounce
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val KEY_INPUT_TEXT = "INPUT_TEXT"
-private const val TRACK_CLICK_DEBOUNCE_DELAY = 1000L
+private const val TRACK_CLICK_DEBOUNCE_DELAY = 200L
 
 class SearchFragment : Fragment() {
 
@@ -35,9 +40,6 @@ class SearchFragment : Fragment() {
 
     private var isClickAllowed = true
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val isClickAllowedRunnable = Runnable { isClickAllowed = true }
-
     private lateinit var trackSearchAdapter: TrackAdapter
     private lateinit var trackHistoryAdapter: TrackAdapter
     private val viewModel: TrackSearchViewModel by viewModel<TrackSearchViewModel>()
@@ -45,7 +47,7 @@ class SearchFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -99,7 +101,7 @@ class SearchFragment : Fragment() {
         }
 
         val imm: InputMethodManager =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager //OK??????
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         binding.clearIcon.setOnClickListener {
             setClearIconOnClickListenerLogic(inputEditText, imm)
@@ -116,6 +118,7 @@ class SearchFragment : Fragment() {
             is SearchState.HistoryListPresentation -> trackHistoryAdapter.apply {
                 updateList { state.historyTrackList }
             }
+
             else -> null
         }
         when (state) {
@@ -180,7 +183,6 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        handler.removeCallbacks(isClickAllowedRunnable)
         _binding = null
     }
 
@@ -226,7 +228,6 @@ class SearchFragment : Fragment() {
             viewModel.addTrackToHistoryList(track)
         }
         if (clickDebounce()) {
-            viewModel.saveSelectedTrack(track)
             val audioplayerIntent = Intent(requireContext(), AudioplayerActivity::class.java)
             audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, track)
             startActivity(audioplayerIntent)
@@ -234,7 +235,6 @@ class SearchFragment : Fragment() {
     }
 
     private fun setClearIconOnClickListenerLogic(inputEditText: EditText, imm: InputMethodManager) {
-        handler.removeCallbacks(isClickAllowedRunnable)
         inputEditText.setText("")
         imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
         if (trackSearchAdapter.trackList.isNotEmpty()) {
@@ -246,7 +246,10 @@ class SearchFragment : Fragment() {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed(isClickAllowedRunnable, TRACK_CLICK_DEBOUNCE_DELAY)
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(TRACK_CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
         }
         return current
     }
