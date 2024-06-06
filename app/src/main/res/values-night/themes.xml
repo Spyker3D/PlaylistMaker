@@ -11,6 +11,7 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="android:colorBackground">@color/dark_black</item>
         <item name="colorSurface">@color/dark_black</item>
+        <item name="colorControlNormal">@color/control</item>
 
     </style>
 

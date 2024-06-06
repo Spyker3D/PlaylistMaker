@@ -3,8 +3,6 @@ package com.practicum.playlistmaker.search.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -14,7 +12,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +22,6 @@ import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAIL
 import com.practicum.playlistmaker.search.presentation.entities.SearchState
 import com.practicum.playlistmaker.search.presentation.entities.Track
 import com.practicum.playlistmaker.search.presentation.viewmodel.TrackSearchViewModel
-import com.practicum.playlistmaker.utils.debounce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel

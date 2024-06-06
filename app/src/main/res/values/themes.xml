@@ -9,6 +9,7 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="android:colorBackground">@color/white</item>
         <item name="colorSurface">@color/white</item>
+        <item name="colorControlNormal">@color/control</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />

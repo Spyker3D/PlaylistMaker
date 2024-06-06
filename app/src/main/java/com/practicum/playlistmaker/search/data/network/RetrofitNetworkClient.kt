@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.util.Log
 import com.practicum.playlistmaker.search.data.dto.NetworkResponse
 import com.practicum.playlistmaker.search.data.dto.TrackSearchRequest
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
@@ -16,6 +17,7 @@ const val ITUNES_URL = "https://itunes.apple.com"
 class RetrofitNetworkClient(
     private val context: Context,
     private val iTunesApiService: ItunesApiService,
+    private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : NetworkClient {
 
     override suspend fun doRequest(dto: Any?): NetworkResponse {
@@ -26,7 +28,7 @@ class RetrofitNetworkClient(
             return NetworkResponse().apply { resultCode = 400 }
         }
 
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherIO) {
             try {
                 val response = iTunesApiService.searchTrack(dto.request)
                 response.apply { resultCode = 200 }

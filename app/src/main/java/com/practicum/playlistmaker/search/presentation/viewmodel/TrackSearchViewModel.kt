@@ -6,6 +6,7 @@ import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.domain.entities.Resource
@@ -16,9 +17,13 @@ import com.practicum.playlistmaker.search.domain.interactor.SearchTrackUseCase
 import com.practicum.playlistmaker.search.presentation.entities.SearchState
 import com.practicum.playlistmaker.search.presentation.entities.Track
 import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
+import kotlin.system.measureTimeMillis
 
 class TrackSearchViewModel(
     application: Application,
@@ -66,17 +71,16 @@ class TrackSearchViewModel(
         viewModelScope.launch {
             searchTrackUseCase.execute(newSearchText).collect {
                 processResult(it)
+                yield()
             }
         }
     }
 
     private fun processResult(searchResult: Resource<List<TrackInfo>?>) {
 
-        val trackListFound = mutableListOf<TrackInfo>()
         if (searchResult.data != null) {
-            trackListFound.addAll(searchResult.data)
             when {
-                trackListFound.isEmpty() -> renderState(
+                searchResult.data.isEmpty() -> renderState(
                     SearchState.Empty(
                         getApplication<Application>().getString(R.string.nothing_found)
                     )
@@ -85,7 +89,7 @@ class TrackSearchViewModel(
                 else -> {
                     renderState(
                         SearchState.Content(
-                            TrackPresentationMapper.mapToPresentation(trackListFound)
+                            TrackPresentationMapper.mapToPresentation(searchResult.data)
                         )
                     )
                 }

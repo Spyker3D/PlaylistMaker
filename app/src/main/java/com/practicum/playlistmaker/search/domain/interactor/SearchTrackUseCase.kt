@@ -15,15 +15,5 @@ class SearchTrackUseCase(private val trackSearchRepository: TrackSearchRepositor
 
     fun execute(trackName: String): Flow<Resource<List<TrackInfo>?>> {
         return trackSearchRepository.searchTrack(trackName)
-//            .map {
-//            result ->
-//            when(result) {
-//                is Resource.Success -> Pair(result.data, null)
-//
-//                is Resource.Error -> Pair(null, result.message)// переделать на сообщения?
-//
-//                is Resource.InternetConnectionError -> Pair(null, result.message)// лишее оставить просто Error
-//            }
-//        }
     }
 }
