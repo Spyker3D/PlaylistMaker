@@ -188,24 +188,24 @@
         android:layout_height="wrap_content"
         android:text="0:00"
         android:textAppearance="@style/AudioplayerMediumText"
-        app:layout_constraintTop_toBottomOf="@id/play_status_placeholder"
+        app:layout_constraintTop_toBottomOf="@id/play_pause_button"
         app:layout_constraintStart_toEndOf="@id/leftBorder"
         app:layout_constraintEnd_toStartOf="@id/rightBorder"
         app:layout_constraintBottom_toTopOf="@id/spacer"
         />
 
-    <ImageButton
-        android:id="@+id/play_status_placeholder"
+    <ImageView
+        android:id="@+id/play_pause_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
         app:srcCompat="@drawable/button_play"
-        android:background="@null"
         app:layout_constraintTop_toBottomOf="@id/spacerTop"
         app:layout_constraintBottom_toTopOf="@id/replayProgress"
         app:layout_constraintEnd_toStartOf="@id/likeButton"
         app:layout_constraintStart_toEndOf="@id/addToPlayListButton"
         android:layout_marginBottom="4dp"
+        android:enabled="false"
         />
 
     <ImageButton
@@ -216,10 +216,10 @@
         app:srcCompat="@drawable/button_playlist"
         android:background="@null"
         android:layout_marginStart="8dp"
-        app:layout_constraintEnd_toStartOf="@id/play_status_placeholder"
+        app:layout_constraintEnd_toStartOf="@id/play_pause_button"
         app:layout_constraintStart_toEndOf="@id/leftBorder"
-        app:layout_constraintTop_toTopOf="@id/play_status_placeholder"
-        app:layout_constraintBottom_toBottomOf="@id/play_status_placeholder"
+        app:layout_constraintTop_toTopOf="@id/play_pause_button"
+        app:layout_constraintBottom_toBottomOf="@id/play_pause_button"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         />
 
@@ -231,9 +231,9 @@
         android:background="@null"
         app:srcCompat="@drawable/button_like"
         android:layout_marginEnd="8dp"
-        app:layout_constraintStart_toEndOf="@id/play_status_placeholder"
-        app:layout_constraintTop_toTopOf="@id/play_status_placeholder"
-        app:layout_constraintBottom_toBottomOf="@id/play_status_placeholder"
+        app:layout_constraintStart_toEndOf="@id/play_pause_button"
+        app:layout_constraintTop_toTopOf="@id/play_pause_button"
+        app:layout_constraintBottom_toBottomOf="@id/play_pause_button"
         app:layout_constraintEnd_toStartOf="@id/rightBorder"
         />
 
@@ -241,7 +241,7 @@
         android:id="@+id/spacerTop"
         android:layout_width="wrap_content"
         android:layout_height="8dp"
-        app:layout_constraintBottom_toTopOf="@id/play_status_placeholder"
+        app:layout_constraintBottom_toTopOf="@id/play_pause_button"
         app:layout_constraintTop_toBottomOf="@id/bandName"
         app:layout_constraintStart_toEndOf="@id/leftBorder"
         />

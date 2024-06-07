@@ -21,9 +21,4 @@ class SharedPrefsStorage(private val sharedPreferences: SharedPreferences, priva
             ?: return arrayListOf<TrackDto>()
         return gson.fromJson(json, Array<TrackDto>::class.java).toMutableList()
     }
-
-    override fun saveSelectedTrack(selectedTrack: TrackDto) {
-        val json = gson.toJson(selectedTrack)
-        sharedPreferences.edit().putString(SELECTED_TRACK, json).apply()
-    }
 }

@@ -8,24 +8,28 @@ import com.practicum.playlistmaker.search.data.network.NetworkClient
 import com.practicum.playlistmaker.search.domain.entities.Resource
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.search.domain.repository.TrackSearchRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class TrackSearchRepositoryImpl(private val networkClient: NetworkClient) : TrackSearchRepository {
-    override fun searchTrack(request: String): Resource<List<TrackInfo>> {
+    override fun searchTrack(request: String): Flow<Resource<List<TrackInfo>?>> = flow {
         val response = networkClient.doRequest(TrackSearchRequest(request))
-
-        return when (response.resultCode) {
-            -1 -> Resource.InternetConnectionError()
+        when (response.resultCode) {
+            -1 -> {
+                emit(Resource.InternetConnectionError())
+            }
 
             200 -> {
                 val trackList: List<TrackInfo> =
                     TrackMapper.mapToDomain((response as TracksSearchResponse).results)
                 if ((response as TracksSearchResponse).results.isNotEmpty()) {
-                    Resource.Success(trackList)
-                } else Resource.Success(listOf<TrackInfo>())
+                    emit(Resource.Success(data = trackList))
+                } else emit(Resource.Success(listOf<TrackInfo>()))
             }
 
-            else -> Resource.Error()
+            else -> emit(Resource.Error())
         }
+
     }
 }
 

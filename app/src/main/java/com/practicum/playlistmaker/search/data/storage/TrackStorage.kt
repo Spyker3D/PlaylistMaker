@@ -8,6 +8,4 @@ interface TrackStorage {
 
     fun getHistoryTrackList(): List<TrackDto>
 
-    fun saveSelectedTrack(selectedTrack: TrackDto)
-
 }
