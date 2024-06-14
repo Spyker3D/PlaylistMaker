@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.di.viewModelModule
 import com.practicum.playlistmaker.search.domain.entities.Resource
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.search.domain.interactor.GetHistoryTrackUseCase
@@ -17,6 +18,8 @@ import com.practicum.playlistmaker.search.domain.interactor.SearchTrackUseCase
 import com.practicum.playlistmaker.search.presentation.entities.SearchState
 import com.practicum.playlistmaker.search.presentation.entities.Track
 import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper
+import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper.mapToDomain
+import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper.mapToPresentation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -34,14 +37,21 @@ class TrackSearchViewModel(
     AndroidViewModel(application) {
 
     private val _stateLiveData =
-        MutableLiveData<SearchState>(SearchState.HistoryListPresentation(getHistoryList()))
+        MutableLiveData<SearchState>()
 
     val stateLiveData: LiveData<SearchState> = _stateLiveData
     private val handler = Handler(Looper.getMainLooper())
 
     private var searchJob: Job? = null
+    private var showHistoryJob: Job? = null
 
     private var latestSearchText: String? = null
+
+    init {
+        viewModelScope.launch {
+            _stateLiveData.value = SearchState.HistoryListPresentation(getHistoryList())
+        }
+    }
 
     fun searchDebounce(changedText: String?, forceSearch: Boolean) {
 
@@ -62,17 +72,14 @@ class TrackSearchViewModel(
         }
     }
 
-    private fun searchRequest(newSearchText: String) {
+    private suspend fun searchRequest(newSearchText: String) {
 
         if (newSearchText.isNotEmpty()) {
             renderState(SearchState.Loading)
         }
 
-        viewModelScope.launch {
-            searchTrackUseCase.execute(newSearchText).collect {
-                processResult(it)
-                yield()
-            }
+        searchTrackUseCase.execute(newSearchText).collect {
+            processResult(it)
         }
     }
 
@@ -89,7 +96,7 @@ class TrackSearchViewModel(
                 else -> {
                     renderState(
                         SearchState.Content(
-                            TrackPresentationMapper.mapToPresentation(searchResult.data)
+                            searchResult.data.map { it.mapToPresentation() }
                         )
                     )
                 }
@@ -123,23 +130,30 @@ class TrackSearchViewModel(
     }
 
     fun addTrackToHistoryList(trackToSave: Track) {
-        val filteredList = getHistoryList() - trackToSave
-        val updatedList = listOf(trackToSave) + filteredList
-        val finalUpdatedList =
-            if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
-        saveHistoryTrackUseCase.execute(TrackPresentationMapper.mapToDomain(finalUpdatedList))
-    }
-
-    fun onTextChanged(s: String?, editTextHasFocus: Boolean) {
-
-        searchDebounce(changedText = s, forceSearch = false)
-        if (editTextHasFocus && s?.isBlank() != false) {
-            renderState(SearchState.HistoryListPresentation(getHistoryList()))
+        viewModelScope.launch {
+            val filteredList = getHistoryList() - trackToSave
+            val updatedList = listOf(trackToSave) + filteredList
+            val finalUpdatedList =
+                if (updatedList.size > 10) updatedList.subList(0, 10) else updatedList
+            saveHistoryTrackUseCase.execute(finalUpdatedList.map { it.mapToDomain() })
         }
     }
 
-    private fun getHistoryList(): List<Track> {
-        return TrackPresentationMapper.mapToPresentation(getHistoryTrackUseCase.execute())
+    fun onTextChanged(s: String?, editTextHasFocus: Boolean) {
+        /* renderState can only be called from this method, because otherwise it can be called when
+        it is not relevant anymore */
+        showHistoryJob?.cancel()
+
+        searchDebounce(changedText = s, forceSearch = false)
+        if (editTextHasFocus && s?.isBlank() != false) {
+            showHistoryJob = viewModelScope.launch {
+                renderState(SearchState.HistoryListPresentation(getHistoryList()))
+            }
+        }
+    }
+
+    private suspend fun getHistoryList(): List<Track> {
+        return (getHistoryTrackUseCase.execute().map { it.mapToPresentation() })
     }
 
     fun clearHistoryList() {

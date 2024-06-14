@@ -17,6 +17,7 @@ val viewModelModule = module {
             savedStateHandle = get(),
             application = androidApplication(),
             audioPlayerInteractor = get(),
+            favouriteTracksInteractor = get(),
         )
     }
 
@@ -46,7 +47,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        FavoriteTracksViewModel()
+        FavoriteTracksViewModel(favouriteTracksInteractor = get())
     }
 
     viewModel {

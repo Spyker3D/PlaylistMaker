@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.mediaLibrary.domain.interactor.FavouriteTracksInteractor
 import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
 import com.practicum.playlistmaker.search.domain.interactor.GetHistoryTrackUseCase
 import com.practicum.playlistmaker.search.domain.interactor.SaveHistoryTrackUseCase
@@ -31,5 +32,9 @@ val interactorModule = module {
 
     factory {
         SettingsInteractor(settingsRepository = get())
+    }
+
+    factory {
+        FavouriteTracksInteractor(favouriteTracksRepository = get())
     }
 }

@@ -28,7 +28,16 @@
         android:id="@+id/mediaLibraryFragment"
         android:name="com.practicum.playlistmaker.mediaLibrary.presentation.MediaLibraryFragment"
         android:label="fragment_media_library"
-        tools:layout="@layout/fragment_media_library" />
+        tools:layout="@layout/fragment_media_library" >
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_audioplayerActivity"
+            app:destination="@id/audioplayerActivity"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/hold"
+            app:popEnterAnim="@anim/hold"
+            app:popExitAnim="@anim/slide_out_right"
+            />
+    </fragment>
     <activity
         android:id="@+id/audioplayerActivity"
         android:name="com.practicum.playlistmaker.player.presentation.AudioplayerActivity"

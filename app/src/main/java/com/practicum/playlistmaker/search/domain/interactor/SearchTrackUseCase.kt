@@ -16,4 +16,5 @@ class SearchTrackUseCase(private val trackSearchRepository: TrackSearchRepositor
     fun execute(trackName: String): Flow<Resource<List<TrackInfo>?>> {
         return trackSearchRepository.searchTrack(trackName)
     }
+
 }

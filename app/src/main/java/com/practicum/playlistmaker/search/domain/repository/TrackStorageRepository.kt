@@ -6,6 +6,6 @@ interface TrackStorageRepository {
 
     fun saveHistoryTrackList(historyTrackListToSave: List<TrackInfo>)
 
-    fun getHistoryTrackList(): List<TrackInfo>
+    suspend fun getHistoryTrackList(): List<TrackInfo>
 
 }

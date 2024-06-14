@@ -5,45 +5,44 @@ import com.practicum.playlistmaker.search.presentation.entities.Track
 
 object TrackPresentationMapper {
 
-    fun mapToPresentation(trackInfoList: List<TrackInfo>): List<Track> {
-        return trackInfoList.map {
-            Track(
-                trackId = it.trackId,
-                trackName = it.trackName,
-                artistName = it.artistName,
-                trackTimeMillis = it.trackTimeMillis,
-                trackTimeMillisFormatted = it.trackTimeMillisFormatted,
-                artworkUrl100 = it.artworkUrl100,
-                country = it.country,
-                collectionName = it.collectionName,
-                releaseDate = it.releaseDate,
-                releaseYear = it.releaseYear,
-                primaryGenreName = it.primaryGenreName,
-                previewUrl = it.previewUrl,
-                artworkUrlLarge = it.artworkUrlLarge,
-            )
-        }
+    fun Track.mapToDomain(): TrackInfo {
+        return TrackInfo(
+            trackId = this.trackId,
+            trackName = this.trackName,
+            artistName = this.artistName,
+            trackTimeMillis = this.trackTimeMillis,
+            trackTimeMillisFormatted = this.trackTimeMillisFormatted,
+            artworkUrl100 = this.artworkUrl100,
+            country = this.country,
+            collectionName = this.collectionName,
+            releaseDate = this.releaseDate,
+            releaseYear = this.releaseYear,
+            primaryGenreName = this.primaryGenreName,
+            previewUrl = this.previewUrl,
+            artworkUrlLarge = this.artworkUrlLarge,
+            isFavourite = this.isFavorite,
+        )
     }
 
-    fun mapToDomain(trackList: List<Track>): List<TrackInfo> {
-        return trackList.map {
-            TrackInfo(
-                trackId = it.trackId,
-                trackName = it.trackName,
-                artistName = it.artistName,
-                trackTimeMillis = it.trackTimeMillis,
-                trackTimeMillisFormatted = it.trackTimeMillisFormatted,
-                artworkUrl100 = it.artworkUrl100,
-                country = it.country,
-                collectionName = it.collectionName,
-                releaseDate = it.releaseDate,
-                releaseYear = it.releaseYear,
-                primaryGenreName = it.primaryGenreName,
-                previewUrl = it.previewUrl,
-                artworkUrlLarge = it.artworkUrlLarge,
-            )
-        }
+    fun TrackInfo.mapToPresentation(): Track {
+        return Track(
+            trackId = this.trackId,
+            trackName = this.trackName,
+            artistName = this.artistName,
+            trackTimeMillis = this.trackTimeMillis,
+            trackTimeMillisFormatted = this.trackTimeMillisFormatted,
+            artworkUrl100 = this.artworkUrl100,
+            country = this.country,
+            collectionName = this.collectionName,
+            releaseDate = this.releaseDate,
+            releaseYear = this.releaseYear,
+            primaryGenreName = this.primaryGenreName,
+            previewUrl = this.previewUrl,
+            artworkUrlLarge = this.artworkUrlLarge,
+            isFavorite = this.isFavourite,
+        )
     }
+    
 }
 
 

@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.player.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -37,15 +38,25 @@ class AudioplayerActivity : AppCompatActivity() {
             binding.playPauseButton.isEnabled = it !is ActivityPlayerState.Idle
 
             when (it) {
-                is ActivityPlayerState.Idle -> setImagePlaceholder(R.drawable.button_play)
-                is ActivityPlayerState.Playing -> setImagePlaceholder(R.drawable.pause_button)
-                is ActivityPlayerState.Paused -> setImagePlaceholder(R.drawable.button_play)
+                is ActivityPlayerState.Idle -> setPlayerStatusButtonImagePlaceholder(R.drawable.button_play)
+                is ActivityPlayerState.Playing -> setPlayerStatusButtonImagePlaceholder(R.drawable.pause_button)
+                is ActivityPlayerState.Paused -> setPlayerStatusButtonImagePlaceholder(R.drawable.button_play)
+            }
+        }
+
+        viewModel.isFavourite.observe(this) {
+            if(it) {
+                setFavouriteButtonImagePlaceholder(R.drawable.button_like_enabled)
+            } else {
+                setFavouriteButtonImagePlaceholder(R.drawable.button_like_disabled)
             }
         }
 
         viewModel.preparePlayer()
 
         binding.playPauseButton.setOnClickListener { viewModel.startOrPause() }
+
+        binding.likeButton.setOnClickListener { viewModel.onFavouriteClicked() }
     }
 
     override fun onPause() {
@@ -53,8 +64,12 @@ class AudioplayerActivity : AppCompatActivity() {
         viewModel.pausePlayer()
     }
 
-    private fun setImagePlaceholder(image: Int) {
+    private fun setPlayerStatusButtonImagePlaceholder(image: Int) {
         binding.playPauseButton.setImageResource(image)
+    }
+
+    private fun setFavouriteButtonImagePlaceholder(image: Int) {
+        binding.likeButton.setImageResource(image)
     }
 
     private fun showTrackDetails(selectedTrack: Track) {

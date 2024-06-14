@@ -6,9 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.mediaLibrary.domain.interactor.FavouriteTracksInteractor
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
 import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
 import com.practicum.playlistmaker.search.presentation.entities.Track
+import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper.mapToDomain
+import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper.mapToPresentation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -19,6 +22,7 @@ class PlayerViewModel(
     savedStateHandle: SavedStateHandle,
     application: Application,
     private val audioPlayerInteractor: AudioPlayerInteractor,
+    private val favouriteTracksInteractor: FavouriteTracksInteractor,
 ) :
     AndroidViewModel(application) {
 
@@ -26,7 +30,7 @@ class PlayerViewModel(
         SimpleDateFormat("m:ss", Locale.getDefault())
     }
 
-    private val selectedTrack =
+    private var selectedTrack =
         savedStateHandle.get<Track>(KEY_SELECTED_TRACK_DETAILS)!!
 
     private var trackProgressJob: Job? = null
@@ -38,25 +42,39 @@ class PlayerViewModel(
     private val _progressTimeLiveData = MutableLiveData<String>()
     val progressTimeLiveData: LiveData<String> = _progressTimeLiveData
 
+    private val _isFavourite = MutableLiveData<Boolean>()
+    val isFavourite: LiveData<Boolean> = _isFavourite
+
     private var initialized: Boolean = false
+    private var isFavouriteJob: Job? = null
 
     fun preparePlayer() {
 
         if (initialized) return
 
         initialized = true
-        audioPlayerInteractor.preparePlayer(
-            selectedTrack.previewUrl.toString(),
-            object : AudioPlayerStatesListener {
-                override fun onPrepared() {
-                    _playerState.value = ActivityPlayerState.Paused(selectedTrack)
-                }
 
-                override fun onCompletion() {
-                    _progressTimeLiveData.postValue(getProgressTime())
-                    _playerState.value = ActivityPlayerState.Paused(selectedTrack)
-                }
-            })
+        viewModelScope.launch {
+            val trackInfo = selectedTrack.mapToDomain()
+            favouriteTracksInteractor.updateTrackStatus(trackInfo)
+            val updatedSelectedTrack = trackInfo.mapToPresentation()
+            _isFavourite.value = updatedSelectedTrack.isFavorite
+            selectedTrack = updatedSelectedTrack
+            _playerState.value = ActivityPlayerState.Idle(updatedSelectedTrack)
+
+            audioPlayerInteractor.preparePlayer(
+                selectedTrack.previewUrl.toString(),
+                object : AudioPlayerStatesListener {
+                    override fun onPrepared() {
+                        _playerState.value = ActivityPlayerState.Paused(selectedTrack)
+                    }
+
+                    override fun onCompletion() {
+                        _progressTimeLiveData.postValue(getProgressTime())
+                        _playerState.value = ActivityPlayerState.Paused(selectedTrack)
+                    }
+                })
+        }
     }
 
     fun startOrPause() {
@@ -93,6 +111,24 @@ class PlayerViewModel(
 
     fun getProgressTime(): String {
         return dateFormat.format(audioPlayerInteractor.getProgressTime())
+    }
+
+    fun onFavouriteClicked() {
+        if (isFavouriteJob?.isActive == true) return
+        val track = _playerState.value?.track ?: return
+        isFavouriteJob = viewModelScope.launch {
+            val trackInfo = track.mapToDomain()
+
+            if (track.isFavorite) {
+                favouriteTracksInteractor.deleteFromFavouriteTracks(trackInfo)
+                track.isFavorite = false
+            } else {
+                favouriteTracksInteractor.insertToFavouriteTracks(trackInfo)
+                track.isFavorite = true
+            }
+
+            _isFavourite.value = track.isFavorite
+        }
     }
 
     override fun onCleared() {
