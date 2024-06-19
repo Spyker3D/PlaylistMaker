@@ -26,7 +26,7 @@ val repositoryModule = module {
     }
 
     single<TrackStorageRepository> {
-        TrackStorageRepositoryImpl(trackStorage = get(), appDatabase = get())
+        TrackStorageRepositoryImpl(trackStorage = get())
     }
 
     single<NavigatorRepository> {

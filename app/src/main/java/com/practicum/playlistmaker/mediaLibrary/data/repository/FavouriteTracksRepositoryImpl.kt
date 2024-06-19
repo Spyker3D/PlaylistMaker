@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.mediaLibrary.data.repository
 
-import com.practicum.playlistmaker.mediaLibrary.data.converters.TrackDbConverter
 import com.practicum.playlistmaker.mediaLibrary.data.converters.TrackDbConverter.mapToDbEntity
 import com.practicum.playlistmaker.mediaLibrary.data.converters.TrackDbConverter.mapToDomainEntity
 import com.practicum.playlistmaker.mediaLibrary.data.db.AppDatabase
@@ -12,11 +11,13 @@ import kotlinx.coroutines.flow.flow
 class FavouriteTracksRepositoryImpl(private val appDatabase: AppDatabase) :
     FavouriteTracksRepository {
     override suspend fun insertToFavouriteTracks(track: TrackInfo) {
-        appDatabase.trackDao().insertToFavouriteTracks(track.mapToDbEntity())
+        val timeAdded = System.currentTimeMillis()
+        appDatabase.trackDao().insertToFavouriteTracks(track.mapToDbEntity(timeAdded))
     }
 
     override suspend fun deleteFromFavouriteTracks(track: TrackInfo) {
-        appDatabase.trackDao().deleteFromFavouriteTracks(track.mapToDbEntity())
+        val timeAdded = System.currentTimeMillis()
+        appDatabase.trackDao().deleteFromFavouriteTracks(track.mapToDbEntity(timeAdded))
     }
 
     override fun getFavouriteTracks(): Flow<List<TrackInfo>> = flow {

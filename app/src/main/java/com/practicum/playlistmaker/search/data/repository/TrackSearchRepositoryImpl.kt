@@ -26,16 +26,8 @@ class TrackSearchRepositoryImpl(
             200 -> {
                 val trackList: List<TrackInfo> =
                     (response as TracksSearchResponse).results.map { it.mapToDomain() }
-                if ((response as TracksSearchResponse).results.isNotEmpty()) {
-                    val favouriteTracksIds = appDatabase.trackDao().getFavouriteTracksIds()
+                emit(Resource.Success(data = trackList))
 
-                    trackList.forEach {
-                        if (it.trackId in favouriteTracksIds) {
-                            it.isFavourite = true
-                        }
-                    }
-                    emit(Resource.Success(data = trackList))
-                } else emit(Resource.Success(listOf<TrackInfo>()))
             }
 
             else -> emit(Resource.Error())

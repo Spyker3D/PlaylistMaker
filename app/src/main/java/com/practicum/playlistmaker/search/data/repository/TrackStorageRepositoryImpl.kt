@@ -12,7 +12,6 @@ import kotlinx.coroutines.withContext
 
 class TrackStorageRepositoryImpl(
     private val trackStorage: TrackStorage,
-    private val appDatabase: AppDatabase,
 ) : TrackStorageRepository {
     override fun saveHistoryTrackList(historyTrackListToSave: List<TrackInfo>) {
         val historyTrackListToSaveMapped = historyTrackListToSave.map { it.mapToStorage() }
@@ -22,13 +21,6 @@ class TrackStorageRepositoryImpl(
     override suspend fun getHistoryTrackList(): List<TrackInfo> {
         val historyTrackListToGet = trackStorage.getHistoryTrackList()
         val historyTrackListTrackInfo = historyTrackListToGet.map { it.mapToDomain() }
-        val favouriteTracksIds: List<Int> = appDatabase.trackDao().getFavouriteTracksIds()
-
-        historyTrackListTrackInfo.forEach {
-            if (it.trackId in favouriteTracksIds) {
-                it.isFavourite = true
-            }
-        }
         return historyTrackListTrackInfo
     }
 }

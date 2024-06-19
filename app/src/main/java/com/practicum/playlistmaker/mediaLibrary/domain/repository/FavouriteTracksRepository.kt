@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.domain.repository
 
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
-import com.practicum.playlistmaker.search.presentation.entities.Track
 import kotlinx.coroutines.flow.Flow
 
 interface FavouriteTracksRepository {

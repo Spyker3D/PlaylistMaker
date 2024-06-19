@@ -18,7 +18,7 @@ object TrackDbConverter {
         return previewUrl?.replaceAfterLast('/', "512x512bb.jpg")
     }
 
-    fun TrackInfo.mapToDbEntity(): TrackEntity {
+    fun TrackInfo.mapToDbEntity(timeAdded: Long): TrackEntity {
         return TrackEntity(
             trackId = this.trackId,
             trackName = this.trackName,
@@ -31,7 +31,7 @@ object TrackDbConverter {
             genreName = this.primaryGenreName,
             country = this.country,
             trackTimeMillis = this.trackTimeMillis,
-            timeAdded = System.currentTimeMillis(),
+            timeAdded = timeAdded,
         )
     }
 
