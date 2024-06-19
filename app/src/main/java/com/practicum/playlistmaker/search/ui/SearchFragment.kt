@@ -57,14 +57,14 @@ class SearchFragment : Fragment() {
 
         trackHistoryAdapter = TrackAdapter(
             trackList = emptyList(), // historyList,
-            onTrackClickListener = { addToHistoryAndSwitchToAudioPlayer(it) },
+            onTrackClickListener = { addToHistoryAndOpenAudioPlayer(it) },
             onActionButtonClickListener = {
                 setupClearHistoryButtonListener(it, binding.youSearchedText)
             }
         )
 
         trackSearchAdapter = TrackAdapter(emptyList(), onTrackClickListener = {
-            addToHistoryAndSwitchToAudioPlayer(it)
+            addToHistoryAndOpenAudioPlayer(it)
         })
         binding.searchRecyclerView.adapter = trackSearchAdapter
 
@@ -219,12 +219,13 @@ class SearchFragment : Fragment() {
         trackSearchAdapter.clearList()
     }
 
-    private fun addToHistoryAndSwitchToAudioPlayer(track: Track) {
+    private fun addToHistoryAndOpenAudioPlayer(track: Track) {
         if (binding.searchRecyclerView.adapter == trackSearchAdapter) {
             viewModel.addTrackToHistoryList(track)
         }
         if (clickDebounce()) {
-            val audioplayerIntent = Intent(requireContext(), AudioplayerActivity::class.java)
+            val audioplayerIntent =
+                Intent(requireContext(), AudioplayerActivity::class.java)
             audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, track)
             startActivity(audioplayerIntent)
         }

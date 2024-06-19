@@ -1,5 +1,8 @@
 package com.practicum.playlistmaker.di
 
+import androidx.room.util.appendPlaceholders
+import com.practicum.playlistmaker.mediaLibrary.data.repository.FavouriteTracksRepositoryImpl
+import com.practicum.playlistmaker.mediaLibrary.domain.repository.FavouriteTracksRepository
 import com.practicum.playlistmaker.player.data.repository.AudioPlayerRepositoryImpl
 import com.practicum.playlistmaker.player.domain.repository.AudioPlayerRepository
 import com.practicum.playlistmaker.search.data.repository.TrackSearchRepositoryImpl
@@ -19,7 +22,7 @@ val repositoryModule = module {
     }
 
     single<TrackSearchRepository> {
-        TrackSearchRepositoryImpl(networkClient = get())
+        TrackSearchRepositoryImpl(networkClient = get(), appDatabase = get())
     }
 
     single<TrackStorageRepository> {
@@ -32,6 +35,10 @@ val repositoryModule = module {
 
     single<SettingsRepository> {
         SettingsRepositoryImpl(get())
+    }
+
+    single<FavouriteTracksRepository> {
+        FavouriteTracksRepositoryImpl(appDatabase = get())
     }
 }
 

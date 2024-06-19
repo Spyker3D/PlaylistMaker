@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.search.domain.repository.TrackStorageReposito
 
 class GetHistoryTrackUseCase(private val trackStorage: TrackStorageRepository) {
 
-    fun execute(): List<TrackInfo> {
+    suspend fun execute(): List<TrackInfo> {
         return trackStorage.getHistoryTrackList()
     }
 }

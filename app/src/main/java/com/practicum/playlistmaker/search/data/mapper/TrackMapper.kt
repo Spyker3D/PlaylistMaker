@@ -16,31 +16,11 @@ object TrackMapper {
     }
     private val releaseYearFormat by lazy { SimpleDateFormat("yyyy", Locale.getDefault()) }
 
-    fun mapToDomain(trackList: List<TrackDto>): List<TrackInfo> {
-        return trackList.map {
-            TrackInfo(
-                trackId = it.trackId,
-                trackName = it.trackName,
-                artistName = it.artistName,
-                trackTimeMillis = it.trackTimeMillis,
-                trackTimeMillisFormatted = trackTimeMillisFormat(it.trackTimeMillis),
-                artworkUrl100 = it.artworkUrl100,
-                country = it.country,
-                collectionName = it.collectionName,
-                releaseDate = it.releaseDate,
-                releaseYear = releaseYearFormat(it.releaseDate),
-                primaryGenreName = it.primaryGenreName,
-                previewUrl = it.previewUrl,
-                artworkUrlLarge = makeLargePreview(it.artworkUrl100)
-            )
-        }
-    }
-
     private fun trackTimeMillisFormat(trackTimeMillis: Long): String {
         return trackTimeFormat.format(trackTimeMillis)
     }
 
-    private fun releaseYearFormat(releaseDate: String?): String? {
+    private fun formatReleaseDateToYear(releaseDate: String?): String? {
         return if (releaseDate != null) {
             releaseDateFormatDetailed.parse(releaseDate)?.let { releaseYearFormat.format(it) }
         } else null
@@ -50,28 +30,45 @@ object TrackMapper {
         return previewUrl?.replaceAfterLast('/', "512x512bb.jpg")
     }
 
-    fun mapToStorage(trackList: List<TrackInfo>): List<TrackDto> {
-        return trackList.map {
-            TrackDto(
-                trackId = it.trackId,
-                trackName = it.trackName,
-                artistName = it.artistName,
-                trackTimeMillis = it.trackTimeMillis,
-                artworkUrl100 = it.artworkUrl100,
-                country = it.country,
-                collectionName = it.collectionName,
-                releaseDate = formatYearToReleaseDate(it.releaseYear),
-                primaryGenreName = it.primaryGenreName,
-                previewUrl = it.previewUrl
-            )
-        }
-    }
-
     private fun formatYearToReleaseDate(releaseYear: String?): String? {
         return if (releaseYear != null) {
             releaseYearFormat.parse(releaseYear)?.let { releaseDateFormatDetailed.format(it) }
         } else null
     }
+
+    fun TrackDto.mapToDomain(): TrackInfo {
+        return TrackInfo(
+            trackId = this.trackId,
+            trackName = this.trackName,
+            artistName = this.artistName,
+            trackTimeMillis = this.trackTimeMillis,
+            trackTimeMillisFormatted = trackTimeMillisFormat(this.trackTimeMillis),
+            artworkUrl100 = this.artworkUrl100,
+            country = this.country,
+            collectionName = this.collectionName,
+            releaseDate = this.releaseDate,
+            releaseYear = formatReleaseDateToYear(this.releaseDate),
+            primaryGenreName = this.primaryGenreName,
+            previewUrl = this.previewUrl,
+            artworkUrlLarge = makeLargePreview(this.artworkUrl100)
+        )
+    }
+
+    fun TrackInfo.mapToStorage(): TrackDto {
+        return TrackDto(
+            trackId = this.trackId,
+            trackName = this.trackName,
+            artistName = this.artistName,
+            trackTimeMillis = this.trackTimeMillis,
+            artworkUrl100 = this.artworkUrl100,
+            country = this.country,
+            collectionName = this.collectionName,
+            releaseDate = formatYearToReleaseDate(this.releaseYear),
+            primaryGenreName = this.primaryGenreName,
+            previewUrl = this.previewUrl
+        )
+    }
+
 }
 
 

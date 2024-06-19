@@ -3,8 +3,8 @@ package com.practicum.playlistmaker.search.domain.entities
 
 data class TrackInfo(
     val trackId: Int,
-    val trackName: String?,
-    val artistName: String?,
+    val trackName: String,
+    val artistName: String,
     val trackTimeMillis: Long,
     val trackTimeMillisFormatted: String,
     val artworkUrl100: String?,
@@ -13,8 +13,9 @@ data class TrackInfo(
     val releaseDate: String?,
     val releaseYear: String?,
     val primaryGenreName: String?,
-    val previewUrl: String?,
+    val previewUrl: String,
     val artworkUrlLarge: String?,
+    var isFavourite: Boolean = false,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

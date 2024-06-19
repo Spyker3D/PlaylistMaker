@@ -1,12 +1,10 @@
 package com.practicum.playlistmaker.search.data.storage
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 
 const val TRACK_LIST_HISTORY_KEY = "savedTrackListHistory"
-const val SELECTED_TRACK = "selectedTrackUrl"
 
 class SharedPrefsStorage(private val sharedPreferences: SharedPreferences, private val gson: Gson) :
     TrackStorage {
