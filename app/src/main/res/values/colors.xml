@@ -11,5 +11,6 @@
     <color name="update_button_text_color">#FFFFFF</color>
     <color name="material_design_3_background">#fffef7ff</color>
     <color name="light_gray_for_text">#AEAFB4</color>
+    <color name="background_color">#99000000</color>
 
 </resources>

@@ -33,5 +33,27 @@
     <string name="bottom_navigator_search_tab">Поиск</string>
     <string name="bottom_navigator_medialibrary_tab">Медиатека</string>
     <string name="bottom_navigator_settings_tab">Настройки</string>
+    <string name="new_playlist_toolbar">Новый плейлист</string>
+    <string name="name_of_playlist_placeholder">Название*</string>
+    <string name="description_of_playlist_placeholder">Описание</string>
+    <string name="create_new_playlist">Создать</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <plurals name="number_of_tracks_plurals">
+        <item quantity="zero">0 треков</item>
+        <item quantity="one">%1$d трек</item>
+        <item quantity="two">%1$d трека</item>
+        <item quantity="few">%1$d трека</item>
+        <item quantity="many">%1$d треков</item>
+        <item quantity="other">%1$d треков</item>
+    </plurals>
+    <string name="playlist_created_message">Плейлист "%1$s" создан!</string>
+    <string name="playlist_name_error_message">Плейлист с таким названием уже существует!</string>
+    <string name="dialog_cancel">Отмена</string>
+    <string name="dialog_finalize">Завершить</string>
+    <string name="dialog_title">Завершить создание плейлиста?</string>
+    <string name="dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="track_insert_to_playlist_error">Трек уже добавлен в плейлист "%1$s"</string>
+    <string name="track_successfully_added_to_playlist">Добавлено в плейлист "%1$s"</string>
 
 </resources>
+

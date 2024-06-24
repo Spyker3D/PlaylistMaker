@@ -46,6 +46,6 @@ val dataModule = module {
     factory { Gson() }
 
     single<AppDatabase> {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").build()
+        AppDatabase.getInstance(androidContext())
     }
 }

@@ -6,7 +6,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.mediaLibrary.domain.interactor.FavouriteTracksInteractor
+import com.practicum.playlistmaker.mediaLibrary.domain.interactor.PlaylistInteractor
+import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistAdapter
+import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsState
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
 import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
 import com.practicum.playlistmaker.search.presentation.entities.Track
@@ -23,6 +27,7 @@ class PlayerViewModel(
     application: Application,
     private val audioPlayerInteractor: AudioPlayerInteractor,
     private val favouriteTracksInteractor: FavouriteTracksInteractor,
+    private val playlistsInteractor: PlaylistInteractor,
 ) :
     AndroidViewModel(application) {
 
@@ -44,6 +49,13 @@ class PlayerViewModel(
 
     private val _isFavourite = MutableLiveData<Boolean>()
     val isFavourite: LiveData<Boolean> = _isFavourite
+
+    private val _playlistsState =
+        MutableLiveData<PlaylistsState>(PlaylistsState.Empty)
+    val playlistsState: LiveData<PlaylistsState> = _playlistsState
+
+    private val _isTrackAddedToPlaylist = MutableLiveData<TrackInPlaylistState>()
+    val isTrackAddedToPlaylist: LiveData<TrackInPlaylistState> = _isTrackAddedToPlaylist
 
     private var initialized: Boolean = false
     private var isFavouriteJob: Job? = null
@@ -133,6 +145,45 @@ class PlayerViewModel(
 
     override fun onCleared() {
         audioPlayerInteractor.releasePlayer()
+    }
+
+    fun loadAllPlaylists() {
+        viewModelScope.launch {
+            playlistsInteractor.getAllPlaylists().collect {
+                processResult(it)
+            }
+        }
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            val listOfTracks: List<Track> =
+                playlistsInteractor.getTracksOfPlaylist(playlistName = playlist.playlistName).map {
+                    it.mapToPresentation()
+                }
+            val listOfTrackIds = listOfTracks.map { it.trackId }
+            if (selectedTrack.trackId in listOfTrackIds) {
+                _isTrackAddedToPlaylist.value =
+                    TrackInPlaylistState.TrackIsInserted(playlistName = playlist.playlistName)
+            } else {
+                _isTrackAddedToPlaylist.value =
+                    TrackInPlaylistState.TrackNotInserted(playlistName = playlist.playlistName)
+                playlistsInteractor.addTrackToPlaylist(selectedTrack, playlist)
+                loadAllPlaylists()
+            }
+        }
+    }
+
+    private fun processResult(playlistsResult: List<Playlist>) {
+        when {
+            playlistsResult.isEmpty() -> {
+                _playlistsState.value = PlaylistsState.Empty
+            }
+
+            else -> {
+                _playlistsState.value = PlaylistsState.Content(playlistsResult)
+            }
+        }
     }
 
     companion object {

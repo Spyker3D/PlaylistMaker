@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.mediaLibrary.data.converters
 
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.TrackEntity
+import com.practicum.playlistmaker.mediaLibrary.data.db.entity.TrackInPlaylistEntity
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.search.presentation.entities.Track
 import java.text.SimpleDateFormat
@@ -36,6 +37,41 @@ object TrackDbConverter {
     }
 
     fun TrackEntity.mapToDomainEntity(): TrackInfo {
+        return TrackInfo(
+            trackId = this.trackId,
+            trackName = this.trackName,
+            artistName = this.artistName,
+            trackTimeMillis = this.trackTimeMillis,
+            trackTimeMillisFormatted = trackTimeMillisFormat(this.trackTimeMillis),
+            artworkUrl100 = this.coverUrl,
+            country = this.country,
+            collectionName = this.collectionName,
+            releaseDate = null,
+            releaseYear = this.releaseYear,
+            primaryGenreName = this.genreName,
+            previewUrl = this.trackUrl,
+            artworkUrlLarge = makeLargePreview(this.trackUrl)
+        )
+    }
+
+    fun TrackInfo.mapToDbTrackInPlaylistsEntity(timeAdded: Long): TrackInPlaylistEntity {
+        return TrackInPlaylistEntity(
+            trackId = this.trackId,
+            trackName = this.trackName,
+            trackUrl = this.previewUrl,
+            coverUrl = this.artworkUrl100,
+            coverUrlLarge = this.artworkUrlLarge,
+            artistName = this.artistName,
+            collectionName = this.collectionName,
+            releaseYear = this.releaseYear,
+            genreName = this.primaryGenreName,
+            country = this.country,
+            trackTimeMillis = this.trackTimeMillis,
+            timeAdded = timeAdded,
+        )
+    }
+
+    fun TrackInPlaylistEntity.mapToDomainEntity(): TrackInfo {
         return TrackInfo(
             trackId = this.trackId,
             trackName = this.trackName,
