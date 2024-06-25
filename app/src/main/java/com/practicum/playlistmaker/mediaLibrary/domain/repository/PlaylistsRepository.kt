@@ -13,7 +13,7 @@ interface PlaylistsRepository {
 
     suspend fun getTracksOfPlaylist(playlistName: String): List<TrackInfo>
 
-    suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist)
+    suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist): Boolean
 
     suspend fun getListOfNamesOfAllPlaylists(playlistName: String): List<String>
 

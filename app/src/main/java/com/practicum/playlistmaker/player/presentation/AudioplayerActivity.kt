@@ -32,8 +32,6 @@ class AudioplayerActivity : AppCompatActivity() {
         binding = ActivityAudioplayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.loadAllPlaylists()
-
         playlistsAdapter = BottomSheetAdapter(emptyList(), onPlaylistListener = {
             viewModel.addTrackToPlaylist(it)
         })
@@ -114,14 +112,8 @@ class AudioplayerActivity : AppCompatActivity() {
         }
         viewModel.playlistsState.observe(this) { render(it) }
 
-        viewModel.isTrackAddedToPlaylist.observe(this) {
-            if (it.trackStatus) {
-                makeToast(getString(R.string.track_insert_to_playlist_error, it.playlistName))
-
-            } else {
-                makeToast(getString(R.string.track_successfully_added_to_playlist, it.playlistName))
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            }
+        viewModel.trackAddToastState.observe(this) { toastMessage ->
+            makeToast(toastMessage)
         }
 
     }

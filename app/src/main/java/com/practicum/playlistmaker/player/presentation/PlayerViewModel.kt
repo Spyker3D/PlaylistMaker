@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.mediaLibrary.domain.interactor.FavouriteTracksInteractor
 import com.practicum.playlistmaker.mediaLibrary.domain.interactor.PlaylistInteractor
@@ -54,11 +56,19 @@ class PlayerViewModel(
         MutableLiveData<PlaylistsState>(PlaylistsState.Empty)
     val playlistsState: LiveData<PlaylistsState> = _playlistsState
 
-    private val _isTrackAddedToPlaylist = MutableLiveData<TrackInPlaylistState>()
-    val isTrackAddedToPlaylist: LiveData<TrackInPlaylistState> = _isTrackAddedToPlaylist
+    private val _trackAddToastState = SingleLiveEvent<String>()
+    val trackAddToastState: LiveData<String> = _trackAddToastState
 
     private var initialized: Boolean = false
     private var isFavouriteJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            playlistsInteractor.getAllPlaylists().collect {
+                processResult(it)
+            }
+        }
+    }
 
     fun preparePlayer() {
 
@@ -121,7 +131,7 @@ class PlayerViewModel(
         _playerState.value = ActivityPlayerState.Paused(selectedTrack)
     }
 
-    fun getProgressTime(): String {
+    private fun getProgressTime(): String {
         return dateFormat.format(audioPlayerInteractor.getProgressTime())
     }
 
@@ -147,29 +157,22 @@ class PlayerViewModel(
         audioPlayerInteractor.releasePlayer()
     }
 
-    fun loadAllPlaylists() {
-        viewModelScope.launch {
-            playlistsInteractor.getAllPlaylists().collect {
-                processResult(it)
-            }
-        }
-    }
-
     fun addTrackToPlaylist(playlist: Playlist) {
         viewModelScope.launch {
-            val listOfTracks: List<Track> =
-                playlistsInteractor.getTracksOfPlaylist(playlistName = playlist.playlistName).map {
-                    it.mapToPresentation()
-                }
-            val listOfTrackIds = listOfTracks.map { it.trackId }
-            if (selectedTrack.trackId in listOfTrackIds) {
-                _isTrackAddedToPlaylist.value =
-                    TrackInPlaylistState.TrackIsInserted(playlistName = playlist.playlistName)
-            } else {
-                _isTrackAddedToPlaylist.value =
-                    TrackInPlaylistState.TrackNotInserted(playlistName = playlist.playlistName)
+            val trackIsAddedResult: Boolean =
                 playlistsInteractor.addTrackToPlaylist(selectedTrack, playlist)
-                loadAllPlaylists()
+            if (trackIsAddedResult) {
+                _trackAddToastState.value =
+                    getApplication<App>().getString(
+                        R.string.track_successfully_added_to_playlist,
+                        playlist.playlistName
+                    )
+            } else {
+                _trackAddToastState.value =
+                    getApplication<App>().getString(
+                        R.string.track_insert_to_playlist_error,
+                        playlist.playlistName
+                    )
             }
         }
     }

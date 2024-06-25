@@ -27,8 +27,8 @@ class PlaylistInteractor(private val playlistsRepository: PlaylistsRepository) {
         return playlistsRepository.getTracksOfPlaylist(playlistName)
     }
 
-    suspend fun addTrackToPlaylist(track: Track, playlist: Playlist) {
-        playlistsRepository.addTrackToTracklist(track.mapToDomain(), playlist)
+    suspend fun addTrackToPlaylist(track: Track, playlist: Playlist): Boolean {
+        return playlistsRepository.addTrackToTracklist(track.mapToDomain(), playlist)
     }
 
     suspend fun getListOfNamesOfAllPlaylists(playlistName: String): List<String> {

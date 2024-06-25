@@ -52,8 +52,6 @@ class PlaylistsFragment : Fragment() {
 
         binding.playlistsGridLayout.adapter = playlistsAdapter
 
-        viewModel.loadAllPlaylists()
-
         viewModel.playlistsState.observe(viewLifecycleOwner) { render(it) }
 
 //        val navHostFragment =

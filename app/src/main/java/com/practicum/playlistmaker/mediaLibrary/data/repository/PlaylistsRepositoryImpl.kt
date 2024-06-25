@@ -13,10 +13,12 @@ import com.practicum.playlistmaker.mediaLibrary.data.db.AppDatabase
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.PlaylistEntityTrackInPlaylistEntityCrossRef
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.mediaLibrary.domain.repository.PlaylistsRepository
+import com.practicum.playlistmaker.player.presentation.TrackInPlaylistState
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -35,9 +37,9 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
         appDatabase.playlistDao().deleteFromPlaylists(playlist.mapToDbEntity())
     }
 
-    override fun getAllPlaylists(): Flow<List<Playlist>> = flow {
+    override fun getAllPlaylists(): Flow<List<Playlist>> {
         val playlistsList = appDatabase.playlistDao().getAllPlaylists()
-        emit(playlistsList.map { it.mapToDomainEntity() })
+        return playlistsList.map { list -> list.map { it.mapToDomainEntity() } }
     }
 
     override suspend fun getTracksOfPlaylist(playlistName: String): List<TrackInfo> {
@@ -46,19 +48,27 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
         }
     }
 
-    override suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist) {
-        val timeAdded = System.currentTimeMillis()
-        appDatabase.trackInPlaylistDao()
-            .insertToTracksInPlaylists(trackInfo.mapToDbTrackInPlaylistsEntity(timeAdded))
+    override suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist): Boolean {
 
-        appDatabase.playlistDao().updateNumberOfTracksInPlaylist(playlist.playlistName)
+        val listOfTrackIds = getTracksOfPlaylist(playlistName = playlist.playlistName)
+            .map { it.trackId }
+        if (trackInfo.trackId !in listOfTrackIds) {
+            val timeAdded = System.currentTimeMillis()
+            appDatabase.trackInPlaylistDao()
+                .insertToTracksInPlaylists(trackInfo.mapToDbTrackInPlaylistsEntity(timeAdded))
 
-        appDatabase.playlistDao().insertPlaylistTrackCrossRef(
-            PlaylistEntityTrackInPlaylistEntityCrossRef(
-                playlist.playlistName,
-                trackInfo.trackId
+            appDatabase.playlistDao().updateNumberOfTracksInPlaylist(playlist.playlistName)
+
+            appDatabase.playlistDao().insertPlaylistTrackCrossRef(
+                PlaylistEntityTrackInPlaylistEntityCrossRef(
+                    playlist.playlistName,
+                    trackInfo.trackId
+                )
             )
-        )
+            return true
+        } else {
+            return false
+        }
     }
 
     override suspend fun getListOfNamesOfAllPlaylists(playlistName: String): List<String> {

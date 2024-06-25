@@ -10,8 +10,11 @@ import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
@@ -23,7 +26,8 @@ private const val DESCRIPTION_INPUT_TEXT = "DESCRIPTION_INPUT_TEXT"
 
 class NewPlaylistFragment : Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding!!
     private var imageIsEmpty: Boolean = true
     lateinit var confirmDialog: MaterialAlertDialogBuilder
     private var pathToPlaylistImage: String = ""
@@ -127,7 +131,7 @@ class NewPlaylistFragment : Fragment() {
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.playlistNameTextInputLayout.editText?.text?.isNotEmpty() == true ||
                 binding.playlistDescriptionTextInputLayout.editText?.text?.isNotEmpty() == true ||
                 !imageIsEmpty

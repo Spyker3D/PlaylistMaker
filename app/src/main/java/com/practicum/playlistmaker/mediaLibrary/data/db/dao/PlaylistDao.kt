@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.mediaLibrary.data.db.entity.PlaylistEntity
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.PlaylistEntityTrackInPlaylistEntityCrossRef
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.relations.PlaylistEntityWithTracks
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.relations.TrackEntityWithPlaylists
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlaylistDao {
@@ -30,7 +31,7 @@ interface PlaylistDao {
     suspend fun deletePlaylistTrackCrossRef(crossRef: PlaylistEntityTrackInPlaylistEntityCrossRef)
 
     @Query("SELECT * FROM playlists_table ORDER BY playlist_name DESC")
-    suspend fun getAllPlaylists(): List<PlaylistEntity>
+    fun getAllPlaylists(): Flow<List<PlaylistEntity>>
 
     @Query("SELECT playlist_name FROM playlists_table WHERE playlist_name = :playlistName")
     suspend fun getListOfNamesOfAllPlaylists(playlistName: String): List<String>

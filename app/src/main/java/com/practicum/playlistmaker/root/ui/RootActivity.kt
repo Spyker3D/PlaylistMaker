@@ -29,10 +29,12 @@ class RootActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.newPlaylistFragment -> {
                     binding.bottomNavigationView.isVisible = false
+                    binding.horizontalLine.isVisible = false
                 }
 
                 else -> {
                     binding.bottomNavigationView.isVisible = true
+                    binding.horizontalLine.isVisible = true
                 }
             }
 
