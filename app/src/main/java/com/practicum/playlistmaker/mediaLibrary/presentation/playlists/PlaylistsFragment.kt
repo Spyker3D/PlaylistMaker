@@ -1,28 +1,22 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.playlists
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
-import com.practicum.playlistmaker.player.presentation.ActivityPlayerState
-import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
-import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAILS
-import com.practicum.playlistmaker.player.presentation.PlayerViewModel
-import com.practicum.playlistmaker.search.presentation.entities.SearchState
+import com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsandedit.PlaylistDetailsAndEditFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
 
 private const val PLAYLIST_CLICK_DEBOUNCE_DELAY = 200L
 
@@ -70,9 +64,15 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun openPlaylistScreen(playlist: Playlist) {
-        if (clickDebounce()) {
-//            findNavController().navigate(R.id.action_mediaLibraryFragment_to_newPlaylistFragment) добавить код по переходу на экран плейлиста в следующем спринте
-        }
+//        if (clickDebounce()) {
+            activity?.supportFragmentManager?.commit {
+                replace(
+                    R.id.rootFragmentContainerView,
+                    PlaylistDetailsAndEditFragment.newInstance(playlist.playlistName)
+                )
+                addToBackStack(null)
+            }
+//        }
     }
 
     private fun clickDebounce(): Boolean {

@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.view.LayoutInflater
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.databinding.ClearHistoryButtonBinding
@@ -13,7 +14,8 @@ private const val TYPE_BUTTON = 2
 class TrackAdapter(
     trackList: List<Track>,
     private val onTrackClickListener: ((Track) -> Unit)? = null,
-    private val onActionButtonClickListener: ((TrackAdapter) -> Unit)? = null
+    private val onActionButtonClickListener: ((TrackAdapter) -> Unit)? = null,
+    private val onLongTrackClickListener: ((Track) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var trackList = trackList
@@ -44,6 +46,10 @@ class TrackAdapter(
             holder.bind(trackList[position])
             holder.itemView.setOnClickListener {
                 onTrackClickListener?.invoke(trackList[holder.adapterPosition])
+            }
+            holder.itemView.setOnLongClickListener {
+                onLongTrackClickListener?.invoke(trackList[holder.adapterPosition])
+                return@setOnLongClickListener true
             }
         }
     }

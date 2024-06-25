@@ -106,7 +106,7 @@ class NewPlaylistFragment : Fragment() {
         binding.buttonCreatePlaylist.setOnClickListener {
             viewModel.savePlaylist(
                 name = playlistName,
-                description = pathToPlaylistImage,
+                description = playlistDescription,
                 pathToImage = pathToPlaylistImage
             )
         }
@@ -152,7 +152,7 @@ class NewPlaylistFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
+//        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
