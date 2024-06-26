@@ -63,7 +63,6 @@ class PlaylistDetailsFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-
         viewModel.loadPlaylistDetails()
 
         viewModel.playlistsState.observe(viewLifecycleOwner) {

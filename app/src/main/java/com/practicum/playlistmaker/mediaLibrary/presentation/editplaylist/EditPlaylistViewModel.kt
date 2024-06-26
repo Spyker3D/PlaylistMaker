@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.editplaylist
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -40,7 +41,7 @@ class EditPlaylistViewModel(
     fun updatePlaylist(
         playlistNameSecondary: String,
         playlistDescriptionNew: String?,
-        playlistImageNew: String?,
+        playlistImageNew: Uri?,
     ) {
         viewModelScope.launch {
             val initialPlaylist = playlistInteractor.getPlaylistByName(playlistName)
@@ -50,9 +51,17 @@ class EditPlaylistViewModel(
                 playlistNameSecondary,
                 playlistDescriptionNew,
                 initialPlaylist.numberOfTracks,
-                playlistImageNew
+                imagePath = if (playlistImageNew != null) {
+                    playlistInteractor.getImagePathToAppStorage(
+                        playlistInteractor.saveImageToAppStorage(
+                            playlistImage = playlistImageNew,
+                            playlistName = playlistNameSecondary
+                        )
+                    ).toString()
+                } else {
+                    null
+                }
             )
-
         }
     }
 

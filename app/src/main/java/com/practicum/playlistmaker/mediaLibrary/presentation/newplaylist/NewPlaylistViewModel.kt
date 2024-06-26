@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.newplaylist
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,39 +13,81 @@ open class NewPlaylistViewModel(
     private val playlistInteractor: PlaylistInteractor,
 ) : ViewModel() {
 
-    private val _playlistIsCreatedState = MutableLiveData<Boolean>()
-    val playlistIsCreatedState: LiveData<Boolean> = _playlistIsCreatedState
-    var imageUriInAppStorage: String? = null
+//    private val _playlistIsCreatedState = MutableLiveData<Boolean>()
+//    val playlistIsCreatedState: LiveData<Boolean> = _playlistIsCreatedState
 
-    fun savePlaylist(name: String, nameSecondary: String, description: String, imagePath: String) {
+    fun savePlaylistCheck(
+        name: String,
+        nameSecondary: String,
+        description: String,
+        imagePath: Uri?,
+    ) {
         viewModelScope.launch {
-            val listOfPlaylistsNames = playlistInteractor.getListOfNamesOfAllPlaylists(name)
-            if (name in listOfPlaylistsNames) {
-                _playlistIsCreatedState.value = false
-                return@launch
-            } else {
-                playlistInteractor.insertPlaylist(
-                    Playlist(
-                        playlistName = name,
-                        playlistNameSecondary = nameSecondary,
-                        playlistDescription = description,
-                        pathToImage = imagePath
-                    )
+//            val listOfPlaylistsNames = playlistInteractor.getListOfNamesOfAllPlaylists(name)
+//            if (name in listOfPlaylistsNames) {
+//                _playlistIsCreatedState.value = false
+//                return@launch
+//            } else {
+//                _playlistIsCreatedState.value = true
+//                savePlaylist(
+//                    playlistImage = imagePath,
+//                    playlistName = name,
+//                    playlistNameSecondary = nameSecondary,
+//                    playlistDescription = description
+//                )
+//            }
+
+//            if (imagePath != null) {
+//                playlistInteractor.saveImageToAppStorage(
+//                    playlistImage = imagePath,
+//                    playlistName = name
+//                )
+//            }
+//            val imageUriInAppStorage =
+//                playlistInteractor.getImagePathToAppStorage(imagePath).toString()
+
+            playlistInteractor.insertPlaylist(
+                Playlist(
+                    playlistName = name,
+                    playlistNameSecondary = nameSecondary,
+                    playlistDescription = description,
+                    pathToImage = if (imagePath != null) {
+                        playlistInteractor.getImagePathToAppStorage(
+                            playlistInteractor.saveImageToAppStorage(
+                                playlistImage = imagePath,
+                                playlistName = name
+                            )
+                        ).toString()
+                    } else {
+                        null
+                    }
                 )
-                _playlistIsCreatedState.value = true
-            }
-        }
-    }
-
-    fun saveImageToAppStorage(playlistImage: String, playlistName: String, imagePath: String) {
-        viewModelScope.launch {
-            playlistInteractor.saveImageToAppStorage(
-                playlistImage = playlistImage,
-                playlistName = playlistName
             )
-            imageUriInAppStorage =
-                playlistInteractor.getImagePathToAppStorage(playlistName).toString()
         }
-    }
 
+//        fun savePlaylist(
+//            playlistImage: String,
+//            playlistName: String,
+//            playlistNameSecondary: String,
+//            playlistDescription: String,
+//        ) {
+//            viewModelScope.launch {
+//                playlistInteractor.saveImageToAppStorage(
+//                    playlistImage = playlistImage,
+//                    playlistName = playlistName
+//                )
+//                val imageUriInAppStorage =
+//                    playlistInteractor.getImagePathToAppStorage(playlistName).toString()
+//
+//                playlistInteractor.insertPlaylist(
+//                    Playlist(
+//                        playlistName = playlistName,
+//                        playlistNameSecondary = playlistNameSecondary,
+//                        playlistDescription = playlistDescription,
+//                        pathToImage = imageUriInAppStorage
+//                    )
+//                )
+//            }
+//        }
+    }
 }

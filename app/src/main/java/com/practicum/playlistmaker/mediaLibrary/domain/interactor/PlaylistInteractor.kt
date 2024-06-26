@@ -36,8 +36,8 @@ class PlaylistInteractor(private val playlistsRepository: PlaylistsRepository) {
         return playlistsRepository.getListOfNamesOfAllPlaylists(playlistName)
     }
 
-    suspend fun saveImageToAppStorage(playlistImage: String, playlistName: String) {
-        playlistsRepository.saveImageToAppStorage(
+    suspend fun saveImageToAppStorage(playlistImage: Uri, playlistName: String): String {
+        return playlistsRepository.saveImageToAppStorage(
             playlistImage = playlistImage,
             playlistName = playlistName
         )
@@ -59,8 +59,8 @@ class PlaylistInteractor(private val playlistsRepository: PlaylistsRepository) {
         return playlistsRepository.getPlaylistByName(playlistName)
     }
 
-    suspend fun getImagePathToAppStorage(playlistName: String): Uri {
-        return playlistsRepository.getImagePathToAppStorage(playlistName)
+    suspend fun getImagePathToAppStorage(uriName: String): Uri {
+        return playlistsRepository.getImagePathToAppStorage(uriName)
     }
 
     suspend fun updateExistingPlaylist(

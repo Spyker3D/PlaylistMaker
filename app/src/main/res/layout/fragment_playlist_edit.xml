@@ -219,6 +219,7 @@
                 android:contentDescription="@null"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
+                android:scaleType="centerCrop"
                 android:layout_marginStart="12dp"
                 android:layout_marginVertical="8dp"
                 android:layout_marginEnd="8dp"

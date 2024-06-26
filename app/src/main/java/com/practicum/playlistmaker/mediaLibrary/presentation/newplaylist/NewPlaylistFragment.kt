@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.newplaylist
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,12 +10,8 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
@@ -30,7 +27,7 @@ open class NewPlaylistFragment : Fragment() {
         get() = _binding!!
     private var imageIsEmpty: Boolean = true
     lateinit var confirmDialog: MaterialAlertDialogBuilder
-    var pathToPlaylistImage: String = ""
+    var pathToPlaylistImage: Uri? = null
     private var playlistName: String = ""
     private var playlistDescription: String = ""
     open val viewModel: NewPlaylistViewModel by viewModel<NewPlaylistViewModel>()
@@ -56,7 +53,7 @@ open class NewPlaylistFragment : Fragment() {
                 if (uri != null) {
                     binding.newPlaylistImagePlaceholder.setImageURI(uri)
                     imageIsEmpty = false
-                    pathToPlaylistImage = uri.toString()
+                    pathToPlaylistImage = uri
                 } else {
                     Log.d("PhotoPicker", "No image selected")
                 }
@@ -104,34 +101,41 @@ open class NewPlaylistFragment : Fragment() {
         }
 
         binding.buttonCreatePlaylist.setOnClickListener {
-            viewModel.savePlaylist(
+            viewModel.savePlaylistCheck(
                 name = playlistName,
                 nameSecondary = playlistName,
                 description = playlistDescription,
                 imagePath = pathToPlaylistImage
             )
-        }
-
-        viewModel.playlistIsCreatedState.observe(viewLifecycleOwner) {
-            if (it) {
-                viewModel.saveImageToAppStorage(
-                    playlistImage = pathToPlaylistImage,
-                    playlistName = playlistName,
-                    imagePath = pathToPlaylistImage
-                )
-                makeToast(resources.getString(R.string.playlist_created_message, playlistName))
-
-                if (requireActivity() is AudioplayerActivity) {
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .remove(this@NewPlaylistFragment)
-                        .commit()
-                } else {
-                    parentFragmentManager.popBackStack()
-                }
+            if (requireActivity() is AudioplayerActivity) {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .remove(this@NewPlaylistFragment)
+                    .commit()
             } else {
-                makeToast(resources.getString(R.string.playlist_name_error_message))
+                parentFragmentManager.popBackStack()
             }
         }
+
+//        viewModel.playlistIsCreatedState.observe(viewLifecycleOwner) {
+//            if (it) {
+//                viewModel.savePlaylist(
+//                    playlistImage = pathToPlaylistImage,
+//                    playlistName = playlistName,
+//                    playlistDescription = playlistDescription
+//                )
+//                makeToast(resources.getString(R.string.playlist_created_message, playlistName))
+//
+//                if (requireActivity() is AudioplayerActivity) {
+//                    requireActivity().supportFragmentManager.beginTransaction()
+//                        .remove(this@NewPlaylistFragment)
+//                        .commit()
+//                } else {
+//                    parentFragmentManager.popBackStack()
+//                }
+//            } else {
+//                makeToast(resources.getString(R.string.playlist_name_error_message))
+//            }
+//        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.playlistNameTextInputLayout.editText?.text?.isNotEmpty() == true ||

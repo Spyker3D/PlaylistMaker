@@ -18,7 +18,7 @@ interface PlaylistsRepository {
 
     suspend fun getListOfNamesOfAllPlaylists(playlistName: String): List<String>
 
-    suspend fun saveImageToAppStorage(playlistImage: String, playlistName: String)
+    suspend fun saveImageToAppStorage(playlistImage: Uri, playlistName: String): String
 
     suspend fun getAllPlaylistDetails(playlistName: String): Pair<Playlist, List<TrackInfo>>
 
@@ -28,7 +28,7 @@ interface PlaylistsRepository {
 
     suspend fun getPlaylistByName(playlistName: String): Playlist
 
-    suspend fun getImagePathToAppStorage(playlistName: String): Uri
+    suspend fun getImagePathToAppStorage(uriName: String): Uri
 
     suspend fun updateExistingPlaylist(
         playlistName: String,

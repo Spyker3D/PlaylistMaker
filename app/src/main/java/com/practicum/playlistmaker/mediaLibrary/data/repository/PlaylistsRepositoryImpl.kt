@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.mediaLibrary.data.repository
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 
 fun Context.getFileByPlaylistName(playlistName: String) = File(
     getExternalFilesDir(Environment.DIRECTORY_PICTURES),
@@ -79,9 +82,10 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
         return appDatabase.playlistDao().getListOfNamesOfAllPlaylists(playlistName)
     }
 
-    override suspend fun saveImageToAppStorage(playlistImage: String, playlistName: String) {
-        val file = context.getFileByPlaylistName(playlistName)
+    override suspend fun saveImageToAppStorage(playlistImage: Uri, playlistName: String): String {
+//        val file = context.getFileByPlaylistName(playlistName)
 
+//        _____________________________
 //        val playlistImagesDirPath = File(
 //            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
 //            "playlist_images"
@@ -90,32 +94,46 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
 //        if(!playlistImagesDirPath.exists()) {
 //            playlistImagesDirPath.mkdirs()
 //        }
-
+//
 //        fileName = playlistName
 //        val filePath = File(playlistImagesDirPath, fileName)
+//        __________________________
 
-        withContext(Dispatchers.IO) {
-            if (!file.exists()) {
-                if (playlistImage.isNotEmpty()) {
-                    context.contentResolver.openInputStream(playlistImage.toUri())!!
-                        .use { inputStream ->
-                            file.outputStream().use { outputStream ->
-                                inputStream.copyTo(outputStream)
-                            } //use - если ошибка, все равно закроет поток, если не закрывать (можно вручную ючерзе close, то останется поток)  = try with resources in Java
-                        }
-                } else {
-                    Unit
-                }
-            } else {
-                Log.e("SAVE_ALBUM_IMAGE_ERROR", "Файл с таким именем уже существует")
-            }
-        }
+//        withContext(Dispatchers.IO) {
+//            if (!file.exists()) {
+//                if (playlistImage.isNotEmpty()) {
+//                    context.contentResolver.openInputStream(playlistImage.toUri())!!
+//                        .use { inputStream ->
+//                            file.outputStream().use { outputStream ->
+//                                inputStream.copyTo(outputStream)
+//                            } //use - если ошибка, все равно закроет поток, если не закрывать (можно вручную ючерзе close, то останется поток)  = try with resources in Java
+//                        }
+//                } else {
+//                    Unit
+//                }
+//            } else {
+//                Log.e("SAVE_ALBUM_IMAGE_ERROR", "Файл с таким именем уже существует")
+//            }
+//        }
+            val filePath =
+                File(
+                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                    "playlist_images"
+                )
+            if (!filePath.exists()) filePath.mkdirs()
+            val imageName = System.currentTimeMillis().toString()
+            val file = File(filePath, imageName)
+            val inputStream = context.contentResolver.openInputStream(playlistImage)
+            val outputStream = FileOutputStream(file)
+            BitmapFactory.decodeStream(inputStream)
+                .compress(Bitmap.CompressFormat.JPEG, 28, outputStream)
+            return imageName
     }
 
-    override suspend fun getImagePathToAppStorage(playlistName: String): Uri {
+    override suspend fun getImagePathToAppStorage(uriName: String): Uri {
         val dirPath =
             File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "playlist_images")
-        val file = File(dirPath, fileName)
+        val file = File(dirPath, uriName)
         return file.toUri()
     }
 
@@ -174,7 +192,7 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
             playlistNameSecondary = playlistNameSecondary,
             playlistDescription = playlistDescription,
             numberOfTracks = numberOfTracks,
-            imagePath = imagePath
+            imagePath = imagePath.toString()
         )
     }
 }

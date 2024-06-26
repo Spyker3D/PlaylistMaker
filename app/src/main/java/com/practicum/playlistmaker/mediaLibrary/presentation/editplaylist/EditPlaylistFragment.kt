@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.editplaylist
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
@@ -24,8 +25,8 @@ class EditPlaylistFragment : NewPlaylistFragment() {
 
         var adjustedlPlaylistName: String? = null
         var adjustedPlaylistDescription: String? = null
-        var adjustedImagePath: String? = null
-        if (pathToPlaylistImage != "") {
+        var adjustedImagePath: Uri? = null
+        if (pathToPlaylistImage != null) {
             adjustedImagePath = pathToPlaylistImage
         }
 

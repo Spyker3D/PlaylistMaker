@@ -18,7 +18,7 @@ class BottomSheetViewHolder(private val binding: AudioplayerPlaylistItemViewBind
         val imageFile = binding.root.context.getFileByPlaylistName(playlist.playlistName)
 
         Glide.with(itemView)
-            .load(imageFile)
+            .load(playlist.pathToImage)
             .placeholder(R.drawable.placeholder_album)
             .centerCrop()
             .transform(RoundedCorners(itemView.resources.getDimensionPixelSize(R.dimen.track_image_rounding_audiotplayer)))
