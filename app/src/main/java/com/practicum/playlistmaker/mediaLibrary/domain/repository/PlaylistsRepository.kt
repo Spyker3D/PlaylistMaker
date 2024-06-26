@@ -19,4 +19,10 @@ interface PlaylistsRepository {
 
     suspend fun saveImageToAppStorage(playlistImage: String, playlistName: String)
 
+    suspend fun getAllPlaylistDetails(playlistName: String): Pair<Playlist, List<TrackInfo>>
+
+    suspend fun deleteTrackFromPlaylist(trackId: Int, playlistName: String)
+
+    suspend fun updateTracksInPlaylist(playlistName: String): List<TrackInfo>
+
 }

@@ -42,4 +42,16 @@ class PlaylistInteractor(private val playlistsRepository: PlaylistsRepository) {
         )
     }
 
+    suspend fun getAllPlaylistDetails(playlistName: String): Pair<Playlist, List<TrackInfo>> {
+        return playlistsRepository.getAllPlaylistDetails(playlistName)
+    }
+
+    suspend fun deleteTrackFromPlaylist(trackId: Int, playlistName: String) {
+        playlistsRepository.deleteTrackFromPlaylist(trackId, playlistName)
+    }
+
+    suspend fun updateTracksInPlaylist(playlistName: String): List<TrackInfo> {
+        return playlistsRepository.updateTracksInPlaylist(playlistName)
+    }
+
 }

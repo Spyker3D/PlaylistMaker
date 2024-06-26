@@ -1,9 +1,8 @@
 package com.practicum.playlistmaker.mediaLibrary.data.converters
 
-import com.practicum.playlistmaker.mediaLibrary.data.db.entity.TrackEntity
+import com.practicum.playlistmaker.mediaLibrary.data.db.entity.FavouriteTrackEntity
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.TrackInPlaylistEntity
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
-import com.practicum.playlistmaker.search.presentation.entities.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -19,8 +18,8 @@ object TrackDbConverter {
         return previewUrl?.replaceAfterLast('/', "512x512bb.jpg")
     }
 
-    fun TrackInfo.mapToDbEntity(timeAdded: Long): TrackEntity {
-        return TrackEntity(
+    fun TrackInfo.mapToDbEntity(timeAdded: Long): FavouriteTrackEntity {
+        return FavouriteTrackEntity(
             trackId = this.trackId,
             trackName = this.trackName,
             trackUrl = this.previewUrl,
@@ -36,7 +35,7 @@ object TrackDbConverter {
         )
     }
 
-    fun TrackEntity.mapToDomainEntity(): TrackInfo {
+    fun FavouriteTrackEntity.mapToDomainEntity(): TrackInfo {
         return TrackInfo(
             trackId = this.trackId,
             trackName = this.trackName,

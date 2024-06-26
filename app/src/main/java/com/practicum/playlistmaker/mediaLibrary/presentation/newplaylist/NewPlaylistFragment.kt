@@ -106,7 +106,7 @@ class NewPlaylistFragment : Fragment() {
         binding.buttonCreatePlaylist.setOnClickListener {
             viewModel.savePlaylist(
                 name = playlistName,
-                description = pathToPlaylistImage,
+                description = playlistDescription,
                 pathToImage = pathToPlaylistImage
             )
         }
@@ -122,7 +122,7 @@ class NewPlaylistFragment : Fragment() {
                 if (requireActivity() is AudioplayerActivity) {
                     requireActivity().supportFragmentManager.beginTransaction()
                         .remove(this@NewPlaylistFragment)
-                        .commit()  // не срабатывает
+                        .commit()
                 } else {
                     parentFragmentManager.popBackStack()
                 }

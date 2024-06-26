@@ -13,7 +13,7 @@ class PlaylistViewHolder(private val binding: PlaylistItemViewBinding) :
 
     fun bind(playlist: Playlist) {
         binding.playlistName.text = playlist.playlistName
-        binding.numberOfTracks.text = getNumberOfTracks(playlist.numberOfTracks) // сделать через plurals string resources
+        binding.numberOfTracks.text = getNumberOfTracks(playlist.numberOfTracks)
 
         val imageFile = binding.root.context.getFileByPlaylistName(playlist.playlistName)
 

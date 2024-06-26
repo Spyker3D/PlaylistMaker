@@ -5,16 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.practicum.playlistmaker.mediaLibrary.data.db.dao.PlaylistDao
-import com.practicum.playlistmaker.mediaLibrary.data.db.dao.TrackDao
+import com.practicum.playlistmaker.mediaLibrary.data.db.dao.FavouriteTrackDao
 import com.practicum.playlistmaker.mediaLibrary.data.db.dao.TrackInPlaylistDao
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.PlaylistEntity
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.PlaylistEntityTrackInPlaylistEntityCrossRef
-import com.practicum.playlistmaker.mediaLibrary.data.db.entity.TrackEntity
+import com.practicum.playlistmaker.mediaLibrary.data.db.entity.FavouriteTrackEntity
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.TrackInPlaylistEntity
 
 @Database(
     entities = [
-        TrackEntity::class,
+        FavouriteTrackEntity::class,
         TrackInPlaylistEntity::class,
         PlaylistEntity::class,
         PlaylistEntityTrackInPlaylistEntityCrossRef::class
@@ -23,7 +23,7 @@ import com.practicum.playlistmaker.mediaLibrary.data.db.entity.TrackInPlaylistEn
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun trackDao(): TrackDao
+    abstract fun trackDao(): FavouriteTrackDao
 
     abstract fun playlistDao(): PlaylistDao
 

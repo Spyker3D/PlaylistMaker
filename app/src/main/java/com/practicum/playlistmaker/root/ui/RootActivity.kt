@@ -27,7 +27,7 @@ class RootActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.newPlaylistFragment -> {
+                R.id.newPlaylistFragment, R.id.playlistDetailsAndEditFragment -> {
                     binding.bottomNavigationView.isVisible = false
                     binding.horizontalLine.isVisible = false
                 }
