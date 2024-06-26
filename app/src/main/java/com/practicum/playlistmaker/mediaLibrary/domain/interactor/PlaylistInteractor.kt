@@ -65,12 +65,14 @@ class PlaylistInteractor(private val playlistsRepository: PlaylistsRepository) {
 
     suspend fun updateExistingPlaylist(
         playlistName: String,
+        playlistNameSecondary: String,
         playlistDescription: String?,
         numberOfTracks: Int,
         imagePath: String?,
     ) {
         playlistsRepository.updateExistingPlaylist(
             playlistName = playlistName,
+            playlistNameSecondary = playlistNameSecondary,
             playlistDescription = playlistDescription,
             numberOfTracks = numberOfTracks,
             imagePath = imagePath

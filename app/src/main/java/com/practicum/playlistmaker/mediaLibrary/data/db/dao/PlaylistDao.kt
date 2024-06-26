@@ -64,12 +64,14 @@ interface PlaylistDao {
     suspend fun getPlaylistByName(playlistName: String): PlaylistEntity
 
     @Query(
-        "UPDATE playlists_table SET description = :playlistDescription," +
+        "UPDATE playlists_table SET playlist_name_detailed = :playlistNameSecondary, " +
+                "description = :playlistDescription," +
                 " number_of_tracks = :numberOfTracks, path_to_image = :imagePath " +
                 "WHERE playlist_name =:playlistName"
     )
     suspend fun updateExistingPlaylist(
         playlistName: String,
+        playlistNameSecondary: String,
         playlistDescription: String?,
         numberOfTracks: Int,
         imagePath: String?,

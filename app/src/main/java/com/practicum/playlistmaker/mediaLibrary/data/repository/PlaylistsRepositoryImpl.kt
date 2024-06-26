@@ -164,12 +164,14 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
 
     override suspend fun updateExistingPlaylist(
         playlistName: String,
+        playlistNameSecondary: String,
         playlistDescription: String?,
         numberOfTracks: Int,
         imagePath: String?,
     ) {
         appDatabase.playlistDao().updateExistingPlaylist(
             playlistName = playlistName,
+            playlistNameSecondary = playlistNameSecondary,
             playlistDescription = playlistDescription,
             numberOfTracks = numberOfTracks,
             imagePath = imagePath

@@ -45,6 +45,7 @@ class PlaylistDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        playlistName = requireArguments().getString(PLAYLIST_NAME_KEY)!!
         val viewModel by viewModel<PlaylistDetailsViewModel> {
             parametersOf(playlistName)
         }
@@ -62,7 +63,6 @@ class PlaylistDetailsFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        playlistName = requireArguments().getString(PLAYLIST_NAME_KEY)!!
 
         viewModel.loadPlaylistDetails()
 
@@ -71,8 +71,6 @@ class PlaylistDetailsFragment : Fragment() {
                 render(it)
             }
         }
-
-        binding.playlistName.text = playlistName
 
         playlistAdapter = TrackAdapter(
             emptyList(),
@@ -152,7 +150,7 @@ class PlaylistDetailsFragment : Fragment() {
     }
 
     private fun render(playlistDetailsAndEditState: PlaylistDetailsState.Content) {
-        binding.playlistName.text = playlistDetailsAndEditState.playlist.playlistName
+        binding.playlistName.text = playlistDetailsAndEditState.playlist.playlistNameSecondary
         binding.playlistDescription.text = playlistDetailsAndEditState.playlist.playlistDescription
 
         Glide.with(requireActivity())
@@ -171,7 +169,7 @@ class PlaylistDetailsFragment : Fragment() {
             playlistDetailsAndEditState.playlist.numberOfTracks,
             playlistDetailsAndEditState.playlist.numberOfTracks
         )
-        binding.playlistNameBottomSheet.text = playlistDetailsAndEditState.playlist.playlistName
+        binding.playlistNameBottomSheet.text = playlistDetailsAndEditState.playlist.playlistNameSecondary
         binding.playlistNumberOfTracksBottomSheet.text = binding.root.resources.getQuantityString(
             R.plurals.number_of_tracks_plurals,
             playlistDetailsAndEditState.playlist.numberOfTracks,

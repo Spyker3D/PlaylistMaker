@@ -8,6 +8,7 @@ object PlaylistDbConverter {
     fun Playlist.mapToDbEntity(): PlaylistEntity {
         return PlaylistEntity(
             playlistName = this.playlistName,
+            playlistNameSecondary = this.playlistNameSecondary,
             playlistDescription = this.playlistDescription,
             pathToImage = this.pathToImage,
             numberOfTracks = this.numberOfTracks,
@@ -17,6 +18,7 @@ object PlaylistDbConverter {
     fun PlaylistEntity.mapToDomainEntity(): Playlist {
         return Playlist(
             playlistName = this.playlistName,
+            playlistNameSecondary = this.playlistNameSecondary,
             playlistDescription = this.playlistDescription,
             pathToImage = this.pathToImage,
             numberOfTracks = this.numberOfTracks,

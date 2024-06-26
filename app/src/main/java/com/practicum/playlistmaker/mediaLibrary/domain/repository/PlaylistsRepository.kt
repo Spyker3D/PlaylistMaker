@@ -30,6 +30,12 @@ interface PlaylistsRepository {
 
     suspend fun getImagePathToAppStorage(playlistName: String): Uri
 
-    suspend fun updateExistingPlaylist(playlistName: String, playlistDescription: String?, numberOfTracks: Int, imagePath: String?)
+    suspend fun updateExistingPlaylist(
+        playlistName: String,
+        playlistNameSecondary: String,
+        playlistDescription: String?,
+        numberOfTracks: Int,
+        imagePath: String?,
+    )
 
 }

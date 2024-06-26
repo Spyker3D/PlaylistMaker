@@ -1,17 +1,13 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.editplaylist
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.addCallback
-import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.mediaLibrary.presentation.newplaylist.NewPlaylistFragment
-import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,8 +21,6 @@ class EditPlaylistFragment : NewPlaylistFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         var initialPlaylistName: String? = null
-        var initialPlaylistDescription: String? = null
-        var initialImagePath: String? = null
 
         var adjustedlPlaylistName: String? = null
         var adjustedPlaylistDescription: String? = null
@@ -47,7 +41,7 @@ class EditPlaylistFragment : NewPlaylistFragment() {
         binding.toolbarNewPlaylist.title = getString(R.string.edit_title_for_toolbar)
 
         viewModel.playlistState.observe(viewLifecycleOwner) {
-            binding.playlistNameEditText.setText(it.playlistName)
+            binding.playlistNameEditText.setText(it.playlistNameSecondary)
             binding.playlistDescriptionEditText.setText(it.playlistDescription)
 //            if(it.playlistImage?.isNotEmpty() == true) {
 //                binding.newPlaylistImagePlaceholder.setImageURI(it.playlistImage.toUri())
@@ -61,9 +55,7 @@ class EditPlaylistFragment : NewPlaylistFragment() {
                 .centerCrop()
                 .into(binding.newPlaylistImagePlaceholder)
 
-            initialPlaylistName = it.playlistName
-            initialPlaylistDescription = it.playlistDescription
-            initialImagePath = it.playlistImage
+            initialPlaylistName = it.playlistNameSecondary
         }
 
         binding.playlistNameTextInputLayout.editText?.doAfterTextChanged {
@@ -78,36 +70,20 @@ class EditPlaylistFragment : NewPlaylistFragment() {
         }
 
         binding.buttonCreatePlaylist.setOnClickListener {
-//            if (adjustedlPlaylistName == initialPlaylistName
-//                && adjustedPlaylistDescription == initialPlaylistDescription
-//                && adjustedImagePath == initialImagePath) {
-//
-//            }
 
             if (binding.playlistNameEditText.text?.isNotEmpty() == true) {
 
                 parentFragmentManager.setFragmentResult(
                     UPDATE_CURRENT_PLAYLIST_KEY,
-                    bundleOf(DATA_KEY to "$adjustedlPlaylistName")
+                    bundleOf(DATA_KEY to "$initialPlaylistName")
                 )
-
-//                if (adjustedlPlaylistName != initialPlaylistName) {
-
-//                    viewModel.updatePlaylistWithNewName(
-//                        adjustedlPlaylistName!!,
-//                        adjustedPlaylistDescription,
-//                        adjustedImagePath
-//                    )
-//                    viewModel.updatedata()
-//                    parentFragmentManager.popBackStack()
-//                } else {
-                    viewModel.updatePlaylistWithTheSameName(
+                    viewModel.updatePlaylist(
+                        adjustedlPlaylistName!!,
                         adjustedPlaylistDescription,
                         adjustedImagePath
                     )
                     viewModel.updatedata()
                     parentFragmentManager.popBackStack()
-//                }
             }
         }
 

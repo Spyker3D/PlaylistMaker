@@ -12,7 +12,7 @@ class PlaylistViewHolder(private val binding: PlaylistItemViewBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(playlist: Playlist) {
-        binding.playlistName.text = playlist.playlistName
+        binding.playlistName.text = playlist.playlistNameSecondary
         binding.numberOfTracks.text = getNumberOfTracks(playlist.numberOfTracks)
 
         val imageFile = binding.root.context.getFileByPlaylistName(playlist.playlistName)

@@ -12,7 +12,7 @@ class BottomSheetViewHolder(private val binding: AudioplayerPlaylistItemViewBind
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(playlist: Playlist) {
-        binding.audioplayerPlaylistName.text = playlist.playlistName
+        binding.audioplayerPlaylistName.text = playlist.playlistNameSecondary
         binding.audioplayerNumberOfTracks.text = getNumberOfTracks(playlist.numberOfTracks)
 
         val imageFile = binding.root.context.getFileByPlaylistName(playlist.playlistName)

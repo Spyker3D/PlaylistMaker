@@ -106,6 +106,7 @@ open class NewPlaylistFragment : Fragment() {
         binding.buttonCreatePlaylist.setOnClickListener {
             viewModel.savePlaylist(
                 name = playlistName,
+                nameSecondary = playlistName,
                 description = playlistDescription,
                 imagePath = pathToPlaylistImage
             )

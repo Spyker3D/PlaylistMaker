@@ -18,7 +18,7 @@ open class NewPlaylistViewModel(
     val playlistIsCreatedState: LiveData<Boolean> = _playlistIsCreatedState
     var imageUriInAppStorage: String? = null
 
-    fun savePlaylist(name: String, description: String, imagePath: String) {
+    fun savePlaylist(name: String, nameSecondary: String, description: String, imagePath: String) {
         viewModelScope.launch {
             val listOfPlaylistsNames = playlistInteractor.getListOfNamesOfAllPlaylists(name)
             if (name in listOfPlaylistsNames) {
@@ -28,6 +28,7 @@ open class NewPlaylistViewModel(
                 playlistInteractor.insertPlaylist(
                     Playlist(
                         playlistName = name,
+                        playlistNameSecondary = nameSecondary,
                         playlistDescription = description,
                         pathToImage = imagePath
                     )
