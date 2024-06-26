@@ -64,7 +64,12 @@
         android:id="@+id/playlistDetailsAndEditFragment"
         android:name="com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsandedit.PlaylistDetailsAndEditFragment"
         android:label="fragment_playlist_edit"
-        tools:layout="@layout/fragment_playlist_edit" >
+        tools:layout="@layout/fragment_playlist_edit"
+        >
+        <argument
+            android:name="playlist_name"
+            app:argType="string"
+            />
         <action
             android:id="@+id/action_playlistDetailsAndEditFragment_to_audioplayerActivity"
             app:destination="@id/audioplayerActivity" />

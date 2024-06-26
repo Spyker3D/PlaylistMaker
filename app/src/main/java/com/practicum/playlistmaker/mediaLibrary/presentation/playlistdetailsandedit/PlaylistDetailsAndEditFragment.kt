@@ -48,7 +48,7 @@ class PlaylistDetailsAndEditFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        playlistName = arguments?.getString(PLAYLIST_NAME_KEY).toString()
+        playlistName = requireArguments().getString(PLAYLIST_NAME_KEY)!!
 
         val viewModel by viewModel<PlaylistDetailsAndEditViewModel> {
             parametersOf(playlistName)
@@ -187,10 +187,7 @@ class PlaylistDetailsAndEditFragment : Fragment() {
     }
 
     companion object {
-        const val PLAYLIST_NAME_KEY = "PLAYLIST_NAME_KEY"
-        fun newInstance(playlistName: String) = PlaylistDetailsAndEditFragment().apply {
-            arguments = bundleOf(PLAYLIST_NAME_KEY to playlistName)
-        }
+        const val PLAYLIST_NAME_KEY = "playlist_name"
     }
 
 }

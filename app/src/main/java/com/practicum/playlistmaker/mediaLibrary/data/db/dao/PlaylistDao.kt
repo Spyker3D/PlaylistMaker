@@ -30,9 +30,6 @@ interface PlaylistDao {
     @Delete(entity = PlaylistEntityTrackInPlaylistEntityCrossRef::class)
     suspend fun deletePlaylistTrackCrossRef(crossRef: PlaylistEntityTrackInPlaylistEntityCrossRef)
 
-    @Query("DELETE FROM playlist_track_cross_ref WHERE playlist_name = :playlistName")
-    suspend fun deleteCrossRefBasedOnPlaylist(playlistName: String)
-
     @Query("SELECT * FROM playlist_track_cross_ref")
     suspend fun getAllCrossRefEntries(): List<PlaylistEntityTrackInPlaylistEntityCrossRef>
 
@@ -53,6 +50,11 @@ interface PlaylistDao {
     @Query("UPDATE playlists_table SET number_of_tracks = :numberOfTracks WHERE playlist_name = :playlistName")
     suspend fun updateNumberOfTracksInPlaylist(playlistName: String, numberOfTracks: Int)
 
-    @Query("SELECT number_of_tracks FROM playlists_table WHERE playlist_name =:playlistName")
+    @Query("SELECT number_of_tracks FROM playlists_table WHERE playlist_name = :playlistName")
     suspend fun getNumberOfTracksInPlaylist(playlistName: String): Int
+
+    @Query("SELECT :trackId IN (SELECT remote_track_id FROM playlist_track_cross_ref" +
+            " WHERE playlist_name = :playlistName)")
+    suspend fun isTrackInPlaylist(trackId: Int, playlistName: String): Boolean
+
 }

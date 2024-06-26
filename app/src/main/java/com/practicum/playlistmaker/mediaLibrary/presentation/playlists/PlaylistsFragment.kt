@@ -1,9 +1,11 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.playlists
 
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -27,6 +29,7 @@ class PlaylistsFragment : Fragment() {
     private var isClickAllowed = true
     private val viewModel: PlaylistsViewModel by viewModel<PlaylistsViewModel>()
     lateinit var playlistsAdapter: PlaylistAdapter
+    private var lastTimeClicked: Long = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +41,7 @@ class PlaylistsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        isClickAllowed = true
 
         binding.playlistsGridLayout.layoutManager = GridLayoutManager(requireContext(), 2)
         playlistsAdapter = PlaylistAdapter(emptyList(), onPlaylistListener = {
@@ -64,27 +68,21 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun openPlaylistScreen(playlist: Playlist) {
-//        if (clickDebounce()) {
-            activity?.supportFragmentManager?.commit {
-                replace(
-                    R.id.rootFragmentContainerView,
-                    PlaylistDetailsAndEditFragment.newInstance(playlist.playlistName)
-                )
-                addToBackStack(null)
-            }
-//        }
+        if (clickDebounce()) {
+            val bundle = bundleOf("playlist_name" to playlist.playlistName)
+            findNavController().navigate(
+                R.id.action_mediaLibraryFragment_to_playlistDetailsAndEditFragment,
+                bundle
+            )
+        }
     }
 
     private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(PLAYLIST_CLICK_DEBOUNCE_DELAY)
-                isClickAllowed = true
-            }
-        }
-        return current
+        val currentTime = SystemClock.uptimeMillis()
+        if (currentTime - lastTimeClicked < PLAYLIST_CLICK_DEBOUNCE_DELAY) return false
+
+        lastTimeClicked = currentTime
+        return true
     }
 
     private fun render(playlistsState: PlaylistsState) {

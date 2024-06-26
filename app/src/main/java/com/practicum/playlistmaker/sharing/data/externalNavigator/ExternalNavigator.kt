@@ -6,7 +6,7 @@ import android.net.Uri
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.sharing.domain.entities.EmailData
 
-class  ExternalNavigator(private val context: Context) {
+class ExternalNavigator(private val context: Context) {
 
     fun shareLink(shareLink: String) {
 
@@ -14,9 +14,9 @@ class  ExternalNavigator(private val context: Context) {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, shareLink)
             type = "text/plain"
-            Intent.createChooser(this, null)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(this)
+            context.startActivity(
+                Intent.createChooser(this, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         }
     }
 
@@ -46,9 +46,12 @@ class  ExternalNavigator(private val context: Context) {
             action = Intent.ACTION_SEND
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, text)
-            Intent.createChooser(this, context.getString(R.string.share_playlist))
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(this)
+            context.startActivity(
+                Intent.createChooser(
+                    this,
+                    context.getString(R.string.share_playlist)
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         }
     }
 }

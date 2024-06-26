@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import androidx.core.net.toUri
+import androidx.room.withTransaction
 import com.practicum.playlistmaker.mediaLibrary.data.converters.PlaylistDbConverter.mapToDbEntity
 import com.practicum.playlistmaker.mediaLibrary.data.converters.PlaylistDbConverter.mapToDomainEntity
 import com.practicum.playlistmaker.mediaLibrary.data.converters.TrackDbConverter.mapToDbTrackInPlaylistsEntity
@@ -43,20 +44,21 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
         }
     }
 
-    override suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist): Boolean {
+    override suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist): Boolean =
+        appDatabase.withTransaction {
+            val isTrackInPlaylist = appDatabase.playlistDao()
+            .isTrackInPlaylist(trackId = trackInfo.trackId, playlistName = playlist.playlistName)
+            if (isTrackInPlaylist) return@withTransaction false
 
-        val listOfTrackIds = getTracksOfPlaylist(playlistName = playlist.playlistName)
-            .map { it.trackId }
-        if (trackInfo.trackId !in listOfTrackIds) {
             val timeAdded = System.currentTimeMillis()
             appDatabase.trackInPlaylistDao()
                 .insertToTracksInPlaylists(trackInfo.mapToDbTrackInPlaylistsEntity(timeAdded))
 
             val currentNumberOfTracks =
-            appDatabase.playlistDao().getNumberOfTracksInPlaylist(playlist.playlistName)
+                appDatabase.playlistDao().getNumberOfTracksInPlaylist(playlist.playlistName)
 
-        appDatabase.playlistDao()
-            .updateNumberOfTracksInPlaylist(playlist.playlistName, currentNumberOfTracks + 1)
+            appDatabase.playlistDao()
+                .updateNumberOfTracksInPlaylist(playlist.playlistName, currentNumberOfTracks + 1)
 
             appDatabase.playlistDao().insertPlaylistTrackCrossRef(
                 PlaylistEntityTrackInPlaylistEntityCrossRef(
@@ -64,11 +66,8 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
                     trackInfo.trackId
                 )
             )
-            return true
-        } else {
-            return false
+            true
         }
-    }
 
     override suspend fun getListOfNamesOfAllPlaylists(playlistName: String): List<String> {
         return appDatabase.playlistDao().getListOfNamesOfAllPlaylists(playlistName)
@@ -105,22 +104,20 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
     }
 
     override suspend fun deleteTrackFromPlaylist(trackId: Int, playlistName: String) {
-        val currentNumberOfTracks =
-            appDatabase.playlistDao().getNumberOfTracksInPlaylist(playlistName)
+        appDatabase.withTransaction {
+            val currentNumberOfTracks =
+                appDatabase.playlistDao().getNumberOfTracksInPlaylist(playlistName)
 
-        appDatabase.playlistDao()
-            .updateNumberOfTracksInPlaylist(playlistName, currentNumberOfTracks - 1)
+            appDatabase.playlistDao()
+                .updateNumberOfTracksInPlaylist(playlistName, currentNumberOfTracks - 1)
 
-        appDatabase.playlistDao().deletePlaylistTrackCrossRef(
-            PlaylistEntityTrackInPlaylistEntityCrossRef(
-                trackId = trackId,
-                playlistName = playlistName
+            appDatabase.playlistDao().deletePlaylistTrackCrossRef(
+                PlaylistEntityTrackInPlaylistEntityCrossRef(
+                    trackId = trackId,
+                    playlistName = playlistName
+                )
             )
-        )
-        val trackIdsOfAllPlaylists =
-            appDatabase.playlistDao().getAllCrossRefEntries().map { it.trackId }
-        if (trackId !in trackIdsOfAllPlaylists) {
-            appDatabase.trackInPlaylistDao().deleteFromTracksInPlaylists(trackId)
+            appDatabase.trackInPlaylistDao().deleteAllNotInPlaylist()
         }
     }
 
@@ -130,17 +127,9 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
     }
 
     override suspend fun deletePlaylist(playlist: Playlist) {
-
-        appDatabase.playlistDao().deleteFromPlaylists(playlist.mapToDbEntity())
-        appDatabase.playlistDao().deleteCrossRefBasedOnPlaylist(playlist.playlistName)
-        val allTracksIds = appDatabase.trackInPlaylistDao().getAllTracksIdsInPlaylists()
-        val crossRefTracksIds = appDatabase.playlistDao().getAllCrossRefEntries().map {
-            it.trackId
-        }
-        allTracksIds.forEach {
-            if (it !in crossRefTracksIds) {
-                appDatabase.trackInPlaylistDao().deleteFromTracksInPlaylists(it)
-            }
+        appDatabase.withTransaction {
+            appDatabase.playlistDao().deleteFromPlaylists(playlist.mapToDbEntity())
+            appDatabase.trackInPlaylistDao().deleteAllNotInPlaylist()
         }
     }
 }
