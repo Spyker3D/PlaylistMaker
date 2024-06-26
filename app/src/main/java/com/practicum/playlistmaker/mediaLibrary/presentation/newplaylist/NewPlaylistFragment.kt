@@ -122,7 +122,7 @@ class NewPlaylistFragment : Fragment() {
                 if (requireActivity() is AudioplayerActivity) {
                     requireActivity().supportFragmentManager.beginTransaction()
                         .remove(this@NewPlaylistFragment)
-                        .commit()  // не срабатывает
+                        .commit()
                 } else {
                     parentFragmentManager.popBackStack()
                 }
@@ -152,7 +152,7 @@ class NewPlaylistFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-//        _binding = null
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
