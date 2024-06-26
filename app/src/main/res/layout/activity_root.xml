@@ -34,6 +34,7 @@
         android:layout_height="64dp"
         android:background="?colorSurface"
         app:itemIconTint="@color/bottomnavigation_item_settings"
+        app:itemBackground="?colorSurface"
         app:itemTextColor="@color/bottomnavigation_item_settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

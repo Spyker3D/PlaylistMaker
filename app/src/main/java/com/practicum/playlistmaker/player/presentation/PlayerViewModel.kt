@@ -6,7 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.mediaLibrary.domain.interactor.FavouriteTracksInteractor
+import com.practicum.playlistmaker.mediaLibrary.domain.interactor.PlaylistInteractor
+import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistAdapter
+import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsState
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
 import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
 import com.practicum.playlistmaker.search.presentation.entities.Track
@@ -23,6 +29,7 @@ class PlayerViewModel(
     application: Application,
     private val audioPlayerInteractor: AudioPlayerInteractor,
     private val favouriteTracksInteractor: FavouriteTracksInteractor,
+    private val playlistsInteractor: PlaylistInteractor,
 ) :
     AndroidViewModel(application) {
 
@@ -45,8 +52,23 @@ class PlayerViewModel(
     private val _isFavourite = MutableLiveData<Boolean>()
     val isFavourite: LiveData<Boolean> = _isFavourite
 
+    private val _playlistsState =
+        MutableLiveData<PlaylistsState>(PlaylistsState.Empty)
+    val playlistsState: LiveData<PlaylistsState> = _playlistsState
+
+    private val _trackAddToastState = SingleLiveEvent<String>()
+    val trackAddToastState: LiveData<String> = _trackAddToastState
+
     private var initialized: Boolean = false
     private var isFavouriteJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            playlistsInteractor.getAllPlaylists().collect {
+                processResult(it)
+            }
+        }
+    }
 
     fun preparePlayer() {
 
@@ -109,7 +131,7 @@ class PlayerViewModel(
         _playerState.value = ActivityPlayerState.Paused(selectedTrack)
     }
 
-    fun getProgressTime(): String {
+    private fun getProgressTime(): String {
         return dateFormat.format(audioPlayerInteractor.getProgressTime())
     }
 
@@ -133,6 +155,38 @@ class PlayerViewModel(
 
     override fun onCleared() {
         audioPlayerInteractor.releasePlayer()
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            val trackIsAddedResult: Boolean =
+                playlistsInteractor.addTrackToPlaylist(selectedTrack, playlist)
+            if (trackIsAddedResult) {
+                _trackAddToastState.value =
+                    getApplication<App>().getString(
+                        R.string.track_successfully_added_to_playlist,
+                        playlist.playlistName
+                    )
+            } else {
+                _trackAddToastState.value =
+                    getApplication<App>().getString(
+                        R.string.track_insert_to_playlist_error,
+                        playlist.playlistName
+                    )
+            }
+        }
+    }
+
+    private fun processResult(playlistsResult: List<Playlist>) {
+        when {
+            playlistsResult.isEmpty() -> {
+                _playlistsState.value = PlaylistsState.Empty
+            }
+
+            else -> {
+                _playlistsState.value = PlaylistsState.Content(playlistsResult)
+            }
+        }
     }
 
     companion object {

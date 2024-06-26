@@ -2,7 +2,9 @@ package com.practicum.playlistmaker.di
 
 import androidx.room.util.appendPlaceholders
 import com.practicum.playlistmaker.mediaLibrary.data.repository.FavouriteTracksRepositoryImpl
+import com.practicum.playlistmaker.mediaLibrary.data.repository.PlaylistsRepositoryImpl
 import com.practicum.playlistmaker.mediaLibrary.domain.repository.FavouriteTracksRepository
+import com.practicum.playlistmaker.mediaLibrary.domain.repository.PlaylistsRepository
 import com.practicum.playlistmaker.player.data.repository.AudioPlayerRepositoryImpl
 import com.practicum.playlistmaker.player.domain.repository.AudioPlayerRepository
 import com.practicum.playlistmaker.search.data.repository.TrackSearchRepositoryImpl
@@ -39,6 +41,10 @@ val repositoryModule = module {
 
     single<FavouriteTracksRepository> {
         FavouriteTracksRepositoryImpl(appDatabase = get())
+    }
+
+    single<PlaylistsRepository> {
+        PlaylistsRepositoryImpl(context = androidContext(), appDatabase = get())
     }
 }
 
