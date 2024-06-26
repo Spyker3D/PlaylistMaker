@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.domain.interactor
 
+import android.net.Uri
 import com.practicum.playlistmaker.mediaLibrary.data.converters.PlaylistDbConverter.mapToDbEntity
 import com.practicum.playlistmaker.mediaLibrary.data.converters.PlaylistDbConverter.mapToDomainEntity
 import com.practicum.playlistmaker.mediaLibrary.data.repository.FavouriteTracksRepositoryImpl
@@ -52,6 +53,28 @@ class PlaylistInteractor(private val playlistsRepository: PlaylistsRepository) {
 
     suspend fun updateTracksInPlaylist(playlistName: String): List<TrackInfo> {
         return playlistsRepository.updateTracksInPlaylist(playlistName)
+    }
+
+    suspend fun getPlaylistByName(playlistName: String): Playlist {
+        return playlistsRepository.getPlaylistByName(playlistName)
+    }
+
+    suspend fun getImagePathToAppStorage(playlistName: String): Uri {
+        return playlistsRepository.getImagePathToAppStorage(playlistName)
+    }
+
+    suspend fun updateExistingPlaylist(
+        playlistName: String,
+        playlistDescription: String?,
+        numberOfTracks: Int,
+        imagePath: String?,
+    ) {
+        playlistsRepository.updateExistingPlaylist(
+            playlistName = playlistName,
+            playlistDescription = playlistDescription,
+            numberOfTracks = numberOfTracks,
+            imagePath = imagePath
+        )
     }
 
 }

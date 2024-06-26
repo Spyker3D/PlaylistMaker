@@ -14,7 +14,7 @@ data class PlaylistEntity(
     @ColumnInfo(name = "description")
     val playlistDescription: String?,
     @ColumnInfo(name = "path_to_image")
-    val pathToImage: String, // Uri?
+    val pathToImage: String?, // Uri?
     @ColumnInfo(name = "number_of_tracks")
     val numberOfTracks: Int = 0,
 )

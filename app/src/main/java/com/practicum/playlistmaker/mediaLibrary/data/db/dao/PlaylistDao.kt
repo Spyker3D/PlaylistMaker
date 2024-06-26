@@ -11,6 +11,7 @@ import com.practicum.playlistmaker.mediaLibrary.data.db.entity.PlaylistEntity
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.PlaylistEntityTrackInPlaylistEntityCrossRef
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.relations.PlaylistEntityWithTracks
 import com.practicum.playlistmaker.mediaLibrary.data.db.entity.relations.TrackEntityWithPlaylists
+import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -53,8 +54,26 @@ interface PlaylistDao {
     @Query("SELECT number_of_tracks FROM playlists_table WHERE playlist_name = :playlistName")
     suspend fun getNumberOfTracksInPlaylist(playlistName: String): Int
 
-    @Query("SELECT :trackId IN (SELECT remote_track_id FROM playlist_track_cross_ref" +
-            " WHERE playlist_name = :playlistName)")
+    @Query(
+        "SELECT :trackId IN (SELECT remote_track_id FROM playlist_track_cross_ref" +
+                " WHERE playlist_name = :playlistName)"
+    )
     suspend fun isTrackInPlaylist(trackId: Int, playlistName: String): Boolean
+
+    @Query("SELECT * FROM playlists_table WHERE playlist_name = :playlistName")
+    suspend fun getPlaylistByName(playlistName: String): PlaylistEntity
+
+    @Query(
+        "UPDATE playlists_table SET description = :playlistDescription," +
+                " number_of_tracks = :numberOfTracks, path_to_image = :imagePath " +
+                "WHERE playlist_name =:playlistName"
+    )
+    suspend fun updateExistingPlaylist(
+        playlistName: String,
+        playlistDescription: String?,
+        numberOfTracks: Int,
+        imagePath: String?,
+    )
+
 
 }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlaylistDetailsAndEditViewModel(
+class PlaylistDetailsViewModel(
     private val playlistName: String,
     private val playlistInteractor: PlaylistInteractor,
     private val navigatorInteractor: NavigatorInteractor,
@@ -22,8 +22,8 @@ class PlaylistDetailsAndEditViewModel(
     private val minutesFormat = SimpleDateFormat("mm", Locale.getDefault())
 
     private val _playlistState =
-        MutableLiveData<PlaylistDetailsAndEditState>(PlaylistDetailsAndEditState.Empty)
-    val playlistsState: LiveData<PlaylistDetailsAndEditState> = _playlistState
+        MutableLiveData<PlaylistDetailsState>(PlaylistDetailsState.Empty)
+    val playlistsState: LiveData<PlaylistDetailsState> = _playlistState
 
     fun loadPlaylistDetails() {
         viewModelScope.launch {
@@ -34,7 +34,7 @@ class PlaylistDetailsAndEditViewModel(
             val playlistLength = getPlaylistLength(tracksList)
 
             _playlistState.value =
-                PlaylistDetailsAndEditState.Content(
+                PlaylistDetailsState.Content(
                     playlist = playlist,
                     tracksList = tracksList,
                     playlistLength = playlistLength
@@ -51,8 +51,8 @@ class PlaylistDetailsAndEditViewModel(
 
     fun sharePlaylist() {
         viewModelScope.launch {
-            val value: PlaylistDetailsAndEditState? = _playlistState.value
-            if (value is PlaylistDetailsAndEditState.Content) {
+            val value: PlaylistDetailsState? = _playlistState.value
+            if (value is PlaylistDetailsState.Content) {
                 navigatorInteractor.sharePlaylist(value.playlist, value.tracksList)
             }
         }
@@ -61,7 +61,7 @@ class PlaylistDetailsAndEditViewModel(
     fun deletePlaylist() {
         viewModelScope.launch {
             val value = _playlistState.value
-            if (value is PlaylistDetailsAndEditState.Content) {
+            if (value is PlaylistDetailsState.Content) {
                 playlistInteractor.deletePlaylist(value.playlist)
             }
         }
@@ -72,5 +72,22 @@ class PlaylistDetailsAndEditViewModel(
         val playlistLengthInMillis: Long = tracksList.sumOf { it.trackTimeMillis }
         return minutesFormat.format(playlistLengthInMillis).toInt()
     }
+
+//    fun loadPlaylistWithUpdatedName(playlistNameUpdated: String) {
+//        viewModelScope.launch {
+//            val pairOfPlaylistAndTracks = playlistInteractor.getAllPlaylistDetails(playlistNameUpdated)
+//            val playlist: Playlist = pairOfPlaylistAndTracks.first
+//            val tracksList: List<Track> =
+//                pairOfPlaylistAndTracks.second.map { it.mapToPresentation() }
+//            val playlistLength = getPlaylistLength(tracksList)
+//
+//            _playlistState.value =
+//                PlaylistDetailsState.Content(
+//                    playlist = playlist,
+//                    tracksList = tracksList,
+//                    playlistLength = playlistLength
+//                )
+//        }
+//    }
 
 }

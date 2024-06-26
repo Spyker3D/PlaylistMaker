@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 data class Playlist(
     val playlistName: String,
     val playlistDescription: String? = "",
-    val pathToImage: String,
+    val pathToImage: String?,
     val numberOfTracks: Int = 0,
 )

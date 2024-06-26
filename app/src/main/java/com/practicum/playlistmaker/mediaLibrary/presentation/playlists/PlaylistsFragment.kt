@@ -8,16 +8,11 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
-import com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsandedit.PlaylistDetailsAndEditFragment
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val PLAYLIST_CLICK_DEBOUNCE_DELAY = 200L
@@ -69,7 +64,7 @@ class PlaylistsFragment : Fragment() {
 
     private fun openPlaylistScreen(playlist: Playlist) {
         if (clickDebounce()) {
-            val bundle = bundleOf("playlist_name" to playlist.playlistName)
+            val bundle = bundleOf(PLAYLIST_NAME_KEY to playlist.playlistName)
             findNavController().navigate(
                 R.id.action_mediaLibraryFragment_to_playlistDetailsAndEditFragment,
                 bundle
@@ -111,6 +106,7 @@ class PlaylistsFragment : Fragment() {
 
     companion object {
         fun newInstance() = PlaylistsFragment()
+        const val PLAYLIST_NAME_KEY = "playlist_name"
     }
 }
 

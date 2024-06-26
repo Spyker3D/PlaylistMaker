@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="?colorSurface"
     android:orientation="vertical"
-    tools:context="com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsandedit.PlaylistDetailsAndEditFragment">
+    tools:context="com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsandedit.PlaylistDetailsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

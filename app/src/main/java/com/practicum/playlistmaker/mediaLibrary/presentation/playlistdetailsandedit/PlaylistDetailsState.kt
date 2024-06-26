@@ -3,14 +3,14 @@ package com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsand
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.search.presentation.entities.Track
 
-sealed interface PlaylistDetailsAndEditState {
+sealed interface PlaylistDetailsState {
 
     data class Content(
         val playlist: Playlist,
         val tracksList: List<Track>,
         val playlistLength: Int,
     ) :
-        PlaylistDetailsAndEditState
+        PlaylistDetailsState
 
-    data object Empty : PlaylistDetailsAndEditState
+    data object Empty : PlaylistDetailsState
 }

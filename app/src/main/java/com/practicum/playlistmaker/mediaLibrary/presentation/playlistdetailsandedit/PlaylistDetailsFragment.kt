@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsand
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -16,16 +18,18 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistEditBinding
+import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsFragment
 import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
 import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAILS
 import com.practicum.playlistmaker.search.ui.TrackAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PlaylistDetailsAndEditFragment : Fragment() {
+class PlaylistDetailsFragment : Fragment() {
 
     private var _binding: FragmentPlaylistEditBinding? = null
     private val binding get() = _binding!!
+    private var lastTimeClicked: Long = 0L
     lateinit var playlistName: String
     lateinit var playlistAdapter: TrackAdapter
 
@@ -41,6 +45,16 @@ class PlaylistDetailsAndEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        val viewModel by viewModel<PlaylistDetailsViewModel> {
+            parametersOf(playlistName)
+        }
+
+        parentFragmentManager.setFragmentResultListener(UPDATE_CURRENT_PLAYLIST_KEY, this) {
+            _, bundle ->
+            val result = bundle.getString(DATA_KEY)
+            viewModel.loadPlaylistDetails()
+        }
+
         var trackDeletionDialog: MaterialAlertDialogBuilder
         var playlistDeletionDialog: MaterialAlertDialogBuilder
 
@@ -50,12 +64,10 @@ class PlaylistDetailsAndEditFragment : Fragment() {
 
         playlistName = requireArguments().getString(PLAYLIST_NAME_KEY)!!
 
-        val viewModel by viewModel<PlaylistDetailsAndEditViewModel> {
-            parametersOf(playlistName)
-        }
         viewModel.loadPlaylistDetails()
+
         viewModel.playlistsState.observe(viewLifecycleOwner) {
-            if (it is PlaylistDetailsAndEditState.Content) {
+            if (it is PlaylistDetailsState.Content) {
                 render(it)
             }
         }
@@ -133,9 +145,13 @@ class PlaylistDetailsAndEditFragment : Fragment() {
             playlistDeletionDialog.show()
         }
 
+        binding.playlistEditInfoTextBottomSheet.setOnClickListener {
+            openEditPlaylistScreen(playlistName)
+        }
+
     }
 
-    private fun render(playlistDetailsAndEditState: PlaylistDetailsAndEditState.Content) {
+    private fun render(playlistDetailsAndEditState: PlaylistDetailsState.Content) {
         binding.playlistName.text = playlistDetailsAndEditState.playlist.playlistName
         binding.playlistDescription.text = playlistDetailsAndEditState.playlist.playlistDescription
 
@@ -174,7 +190,7 @@ class PlaylistDetailsAndEditFragment : Fragment() {
         playlistAdapter.updateList { playlistDetailsAndEditState.tracksList }
     }
 
-    private fun sharePlaylist(viewModel: PlaylistDetailsAndEditViewModel) {
+    private fun sharePlaylist(viewModel: PlaylistDetailsViewModel) {
         if (playlistAdapter.trackList.isEmpty()) {
             Toast.makeText(
                 requireContext(),
@@ -186,8 +202,29 @@ class PlaylistDetailsAndEditFragment : Fragment() {
         }
     }
 
+    private fun openEditPlaylistScreen(playlistName: String) {
+        if (clickDebounce()) {
+            val bundle = bundleOf(PlaylistsFragment.PLAYLIST_NAME_KEY to playlistName)
+            findNavController().navigate(
+                R.id.action_playlistDetailsAndEditFragment_to_editPlaylistFragment,
+                bundle
+            )
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val currentTime = SystemClock.uptimeMillis()
+        if (currentTime - lastTimeClicked < EDIT_CLICK_DEBOUNCE_DELAY) return false
+
+        lastTimeClicked = currentTime
+        return true
+    }
+
     companion object {
         const val PLAYLIST_NAME_KEY = "playlist_name"
+        const val UPDATE_CURRENT_PLAYLIST_KEY = "update_current_playlist"
+        const val DATA_KEY = "data"
+        const val EDIT_CLICK_DEBOUNCE_DELAY = 200L
     }
 
 }

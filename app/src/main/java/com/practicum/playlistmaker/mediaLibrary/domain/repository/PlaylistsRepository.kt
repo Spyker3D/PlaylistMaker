@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.domain.repository
 
+import android.net.Uri
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import kotlinx.coroutines.flow.Flow
@@ -24,5 +25,11 @@ interface PlaylistsRepository {
     suspend fun deleteTrackFromPlaylist(trackId: Int, playlistName: String)
 
     suspend fun updateTracksInPlaylist(playlistName: String): List<TrackInfo>
+
+    suspend fun getPlaylistByName(playlistName: String): Playlist
+
+    suspend fun getImagePathToAppStorage(playlistName: String): Uri
+
+    suspend fun updateExistingPlaylist(playlistName: String, playlistDescription: String?, numberOfTracks: Int, imagePath: String?)
 
 }

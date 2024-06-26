@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorSurface"
+    tools:context="com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsandedit.NewPlaylistFragment">
     >
 
     <androidx.appcompat.widget.Toolbar
@@ -86,6 +87,7 @@
                 app:layout_constraintTop_toBottomOf="@id/new_playlist_image_placeholder">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/playlist_name_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/EditTextNewPlaylist"
@@ -108,6 +110,7 @@
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/playlist_description_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/EditTextNewPlaylist"

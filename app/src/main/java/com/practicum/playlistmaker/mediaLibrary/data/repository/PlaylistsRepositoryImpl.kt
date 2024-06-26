@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.mediaLibrary.data.repository
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.core.net.toUri
@@ -27,6 +28,8 @@ fun Context.getFileByPlaylistName(playlistName: String) = File(
     playlistName
 )
 
+private var fileName = ""
+
 class PlaylistsRepositoryImpl(private val context: Context, private val appDatabase: AppDatabase) :
     PlaylistsRepository {
     override suspend fun insertPlaylist(playlist: Playlist) {
@@ -47,7 +50,10 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
     override suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist): Boolean =
         appDatabase.withTransaction {
             val isTrackInPlaylist = appDatabase.playlistDao()
-            .isTrackInPlaylist(trackId = trackInfo.trackId, playlistName = playlist.playlistName)
+                .isTrackInPlaylist(
+                    trackId = trackInfo.trackId,
+                    playlistName = playlist.playlistName
+                )
             if (isTrackInPlaylist) return@withTransaction false
 
             val timeAdded = System.currentTimeMillis()
@@ -76,6 +82,18 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
     override suspend fun saveImageToAppStorage(playlistImage: String, playlistName: String) {
         val file = context.getFileByPlaylistName(playlistName)
 
+//        val playlistImagesDirPath = File(
+//            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+//            "playlist_images"
+//        )
+//
+//        if(!playlistImagesDirPath.exists()) {
+//            playlistImagesDirPath.mkdirs()
+//        }
+
+//        fileName = playlistName
+//        val filePath = File(playlistImagesDirPath, fileName)
+
         withContext(Dispatchers.IO) {
             if (!file.exists()) {
                 if (playlistImage.isNotEmpty()) {
@@ -92,6 +110,13 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
                 Log.e("SAVE_ALBUM_IMAGE_ERROR", "Файл с таким именем уже существует")
             }
         }
+    }
+
+    override suspend fun getImagePathToAppStorage(playlistName: String): Uri {
+        val dirPath =
+            File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "playlist_images")
+        val file = File(dirPath, fileName)
+        return file.toUri()
     }
 
     override suspend fun getAllPlaylistDetails(playlistName: String): Pair<Playlist, List<TrackInfo>> {
@@ -131,5 +156,23 @@ class PlaylistsRepositoryImpl(private val context: Context, private val appDatab
             appDatabase.playlistDao().deleteFromPlaylists(playlist.mapToDbEntity())
             appDatabase.trackInPlaylistDao().deleteAllNotInPlaylist()
         }
+    }
+
+    override suspend fun getPlaylistByName(playlistName: String): Playlist {
+        return appDatabase.playlistDao().getPlaylistByName(playlistName).mapToDomainEntity()
+    }
+
+    override suspend fun updateExistingPlaylist(
+        playlistName: String,
+        playlistDescription: String?,
+        numberOfTracks: Int,
+        imagePath: String?,
+    ) {
+        appDatabase.playlistDao().updateExistingPlaylist(
+            playlistName = playlistName,
+            playlistDescription = playlistDescription,
+            numberOfTracks = numberOfTracks,
+            imagePath = imagePath
+        )
     }
 }

@@ -24,16 +24,16 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 private const val NAME_INPUT_TEXT = "NAME_INPUT_TEXT"
 private const val DESCRIPTION_INPUT_TEXT = "DESCRIPTION_INPUT_TEXT"
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding
+    open val binding
         get() = _binding!!
     private var imageIsEmpty: Boolean = true
     lateinit var confirmDialog: MaterialAlertDialogBuilder
-    private var pathToPlaylistImage: String = ""
+    var pathToPlaylistImage: String = ""
     private var playlistName: String = ""
     private var playlistDescription: String = ""
-    private val viewModel: NewPlaylistViewModel by viewModel<NewPlaylistViewModel>()
+    open val viewModel: NewPlaylistViewModel by viewModel<NewPlaylistViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -107,7 +107,7 @@ class NewPlaylistFragment : Fragment() {
             viewModel.savePlaylist(
                 name = playlistName,
                 description = playlistDescription,
-                pathToImage = pathToPlaylistImage
+                imagePath = pathToPlaylistImage
             )
         }
 
@@ -115,7 +115,8 @@ class NewPlaylistFragment : Fragment() {
             if (it) {
                 viewModel.saveImageToAppStorage(
                     playlistImage = pathToPlaylistImage,
-                    playlistName = playlistName
+                    playlistName = playlistName,
+                    imagePath = pathToPlaylistImage
                 )
                 makeToast(resources.getString(R.string.playlist_created_message, playlistName))
 
