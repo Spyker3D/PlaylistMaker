@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.mediaLibrary.presentation.editplaylist
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
@@ -21,14 +22,9 @@ class EditPlaylistFragment : NewPlaylistFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var initialPlaylistName: String? = null
-
         var adjustedlPlaylistName: String? = null
         var adjustedPlaylistDescription: String? = null
         var adjustedImagePath: Uri? = null
-        if (pathToPlaylistImage != null) {
-            adjustedImagePath = pathToPlaylistImage
-        }
 
         binding.toolbarNewPlaylist.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -44,11 +40,6 @@ class EditPlaylistFragment : NewPlaylistFragment() {
         viewModel.playlistState.observe(viewLifecycleOwner) {
             binding.playlistNameEditText.setText(it.playlistNameSecondary)
             binding.playlistDescriptionEditText.setText(it.playlistDescription)
-//            if(it.playlistImage?.isNotEmpty() == true) {
-//                binding.newPlaylistImagePlaceholder.setImageURI(it.playlistImage.toUri())
-//            } else {
-//                binding.newPlaylistImagePlaceholder.getIm(R.drawable.placeholder_album)
-//            }
 
             Glide.with(this)
                 .load(it.playlistImage)
@@ -56,7 +47,6 @@ class EditPlaylistFragment : NewPlaylistFragment() {
                 .centerCrop()
                 .into(binding.newPlaylistImagePlaceholder)
 
-            initialPlaylistName = it.playlistNameSecondary
         }
 
         binding.playlistNameTextInputLayout.editText?.doAfterTextChanged {
@@ -73,28 +63,25 @@ class EditPlaylistFragment : NewPlaylistFragment() {
         binding.buttonCreatePlaylist.setOnClickListener {
 
             if (binding.playlistNameEditText.text?.isNotEmpty() == true) {
+                adjustedImagePath = pathToPlaylistImage
 
-                parentFragmentManager.setFragmentResult(
-                    UPDATE_CURRENT_PLAYLIST_KEY,
-                    bundleOf(DATA_KEY to "$initialPlaylistName")
+                viewModel.updatePlaylist(
+                    adjustedlPlaylistName!!,
+                    adjustedPlaylistDescription,
+                    adjustedImagePath
                 )
-                    viewModel.updatePlaylist(
-                        adjustedlPlaylistName!!,
-                        adjustedPlaylistDescription,
-                        adjustedImagePath
-                    )
-                    viewModel.updatedata()
-                    parentFragmentManager.popBackStack()
             }
+        }
+
+        viewModel.closeScreen.observe(viewLifecycleOwner) {
+            parentFragmentManager.popBackStack()
+
         }
 
     }
 
-
     companion object {
         const val PLAYLIST_NAME_KEY = "playlist_name"
-        const val UPDATE_CURRENT_PLAYLIST_KEY = "update_current_playlist"
-        const val DATA_KEY = "data"
     }
 
 }

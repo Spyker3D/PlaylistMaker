@@ -27,18 +27,21 @@ class PlaylistDetailsViewModel(
 
     fun loadPlaylistDetails() {
         viewModelScope.launch {
-            val pairOfPlaylistAndTracks = playlistInteractor.getAllPlaylistDetails(playlistName)
-            val playlist: Playlist = pairOfPlaylistAndTracks.first
-            val tracksList: List<Track> =
-                pairOfPlaylistAndTracks.second.map { it.mapToPresentation() }
-            val playlistLength = getPlaylistLength(tracksList)
+            playlistInteractor.getAllPlaylistDetails(playlistName).collect {
+                val playlist: Playlist = it.first
+                val trackListDomainSorted =
+                    it.second.sortedByDescending { trackInfo -> trackInfo.timeAdded }
+                val tracksList: List<Track> =
+                    trackListDomainSorted.map { trackInfo -> trackInfo.mapToPresentation() }
+                val playlistLength = getPlaylistLength(tracksList)
 
-            _playlistState.value =
-                PlaylistDetailsState.Content(
-                    playlist = playlist,
-                    tracksList = tracksList,
-                    playlistLength = playlistLength
-                )
+                _playlistState.value =
+                    PlaylistDetailsState.Content(
+                        playlist = playlist,
+                        tracksList = tracksList,
+                        playlistLength = playlistLength
+                    )
+            }
         }
     }
 
@@ -72,22 +75,5 @@ class PlaylistDetailsViewModel(
         val playlistLengthInMillis: Long = tracksList.sumOf { it.trackTimeMillis }
         return minutesFormat.format(playlistLengthInMillis).toInt()
     }
-
-//    fun loadPlaylistWithUpdatedName(playlistNameUpdated: String) {
-//        viewModelScope.launch {
-//            val pairOfPlaylistAndTracks = playlistInteractor.getAllPlaylistDetails(playlistNameUpdated)
-//            val playlist: Playlist = pairOfPlaylistAndTracks.first
-//            val tracksList: List<Track> =
-//                pairOfPlaylistAndTracks.second.map { it.mapToPresentation() }
-//            val playlistLength = getPlaylistLength(tracksList)
-//
-//            _playlistState.value =
-//                PlaylistDetailsState.Content(
-//                    playlist = playlist,
-//                    tracksList = tracksList,
-//                    playlistLength = playlistLength
-//                )
-//        }
-//    }
 
 }

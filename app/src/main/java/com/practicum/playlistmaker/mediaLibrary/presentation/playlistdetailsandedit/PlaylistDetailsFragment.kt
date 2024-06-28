@@ -18,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistEditBinding
+import com.practicum.playlistmaker.mediaLibrary.presentation.editplaylist.EditPlaylistViewModel
 import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsFragment
 import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
 import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAILS
@@ -32,6 +33,10 @@ class PlaylistDetailsFragment : Fragment() {
     private var lastTimeClicked: Long = 0L
     lateinit var playlistName: String
     lateinit var playlistAdapter: TrackAdapter
+    private val viewModel by viewModel<PlaylistDetailsViewModel> {
+        parametersOf(requireArguments().getString(PLAYLIST_NAME_KEY)!!)
+    }
+    private var navigatedFromEditPlaylist: Boolean = false
 
 
     override fun onCreateView(
@@ -46,15 +51,6 @@ class PlaylistDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         playlistName = requireArguments().getString(PLAYLIST_NAME_KEY)!!
-        val viewModel by viewModel<PlaylistDetailsViewModel> {
-            parametersOf(playlistName)
-        }
-
-        parentFragmentManager.setFragmentResultListener(UPDATE_CURRENT_PLAYLIST_KEY, this) {
-            _, bundle ->
-            val result = bundle.getString(DATA_KEY)
-            viewModel.loadPlaylistDetails()
-        }
 
         var trackDeletionDialog: MaterialAlertDialogBuilder
         var playlistDeletionDialog: MaterialAlertDialogBuilder
@@ -80,14 +76,16 @@ class PlaylistDetailsFragment : Fragment() {
                 startActivity(audioplayerIntent)
             },
             onLongTrackClickListener = {
-                trackDeletionDialog = MaterialAlertDialogBuilder(requireActivity())
-                    .setMessage(R.string.dialog_track_deletion_message)
-                    .setNegativeButton(R.string.dialog_track_deletion_negative) { dialog, which ->
-                        dialog.dismiss()
+                trackDeletionDialog =
+                    MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialAlertDialog)
+                        .setMessage(R.string.dialog_track_deletion_message)
+                        .setNegativeButton(R.string.dialog_track_deletion_negative) { dialog, which ->
+                            dialog.dismiss()
 
-                    }.setPositiveButton(R.string.dialog_track_deletion_positive) { dialog, which ->
-                        viewModel.deleteTrackFromPlaylist(it.trackId, playlistName)
-                    }
+                        }
+                        .setPositiveButton(R.string.dialog_track_deletion_positive) { dialog, which ->
+                            viewModel.deleteTrackFromPlaylist(it.trackId, playlistName)
+                        }
                 trackDeletionDialog.show()
             })
 
@@ -106,7 +104,10 @@ class PlaylistDetailsFragment : Fragment() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 
                 when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.isVisible = false
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.isVisible = false
+                        binding.playlistTracksBottomSheetContainer.isVisible = true
+                    }
                     else -> binding.overlay.isVisible = true
                 }
             }
@@ -126,19 +127,21 @@ class PlaylistDetailsFragment : Fragment() {
         }
 
         binding.more.setOnClickListener {
+            binding.playlistTracksBottomSheetContainer.isVisible = false
             playlistBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         binding.playlistDeleteTextBottomSheet.setOnClickListener {
-            playlistDeletionDialog = MaterialAlertDialogBuilder(requireActivity())
-                .setMessage(getString(R.string.delete_playlist_message, playlistName))
-                .setNegativeButton(R.string.dialog_track_deletion_negative) { dialog, which ->
-                    dialog.dismiss()
+            playlistDeletionDialog =
+                MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialAlertDialog)
+                    .setMessage(getString(R.string.delete_playlist_message, playlistName))
+                    .setNegativeButton(R.string.dialog_track_deletion_negative) { dialog, which ->
+                        dialog.dismiss()
 
-                }.setPositiveButton(R.string.dialog_track_deletion_positive) { dialog, which ->
-                    viewModel.deletePlaylist()
-                    parentFragmentManager.popBackStack()
-                }
+                    }.setPositiveButton(R.string.dialog_track_deletion_positive) { dialog, which ->
+                        viewModel.deletePlaylist()
+                        parentFragmentManager.popBackStack()
+                    }
             playlistDeletionDialog.show()
         }
 
@@ -168,7 +171,8 @@ class PlaylistDetailsFragment : Fragment() {
             playlistDetailsAndEditState.playlist.numberOfTracks,
             playlistDetailsAndEditState.playlist.numberOfTracks
         )
-        binding.playlistNameBottomSheet.text = playlistDetailsAndEditState.playlist.playlistNameSecondary
+        binding.playlistNameBottomSheet.text =
+            playlistDetailsAndEditState.playlist.playlistNameSecondary
         binding.playlistNumberOfTracksBottomSheet.text = binding.root.resources.getQuantityString(
             R.plurals.number_of_tracks_plurals,
             playlistDetailsAndEditState.playlist.numberOfTracks,
@@ -201,6 +205,7 @@ class PlaylistDetailsFragment : Fragment() {
 
     private fun openEditPlaylistScreen(playlistName: String) {
         if (clickDebounce()) {
+            navigatedFromEditPlaylist = true
             val bundle = bundleOf(PlaylistsFragment.PLAYLIST_NAME_KEY to playlistName)
             findNavController().navigate(
                 R.id.action_playlistDetailsAndEditFragment_to_editPlaylistFragment,

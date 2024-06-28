@@ -84,7 +84,8 @@ object TrackDbConverter {
             releaseYear = this.releaseYear,
             primaryGenreName = this.genreName,
             previewUrl = this.trackUrl,
-            artworkUrlLarge = makeLargePreview(this.trackUrl)
+            artworkUrlLarge = makeLargePreview(this.trackUrl),
+            timeAdded = this.timeAdded
         )
     }
 

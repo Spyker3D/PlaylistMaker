@@ -69,7 +69,7 @@
         tools:layout="@layout/fragment_playlist_edit"
         >
         <argument
-            android:name="playlist_name"
+            android:name="update_current_playlist"
             app:argType="string"
             />
         <action

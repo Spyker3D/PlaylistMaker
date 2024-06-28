@@ -14,15 +14,6 @@
         android:background="@color/light_gray"
         tools:visibility="visible">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_playlist_details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/arrow_back" />
-
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/leftBorder"
             android:layout_width="wrap_content"
@@ -43,6 +34,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/placeholder_album" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_playlist_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/arrow_back" />
 
         <TextView
             android:id="@+id/playlist_name"
@@ -166,7 +166,7 @@
 <!--        ОТРЕДАКТИРОВАТЬ ЭТОТ ТЕКСТ ПО ФОРМАТУ -->
         <TextView
             android:id="@+id/out_of_tracks"
-            android:textAppearance="@style/PlaylistNameHeader"
+            android:textAppearance="@style/NoTracksInBottomSheet"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_gravity="center"

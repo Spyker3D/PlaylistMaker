@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorSurface"
-    tools:context="com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsandedit.NewPlaylistFragment">
+    tools:context="com.practicum.playlistmaker.mediaLibrary.presentation.newplaylist.NewPlaylistFragment"
+    android:id="@+id/newPlaylistFragment"
     >
 
     <androidx.appcompat.widget.Toolbar

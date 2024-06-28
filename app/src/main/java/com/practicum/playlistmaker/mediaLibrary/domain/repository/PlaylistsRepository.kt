@@ -12,19 +12,13 @@ interface PlaylistsRepository {
 
     fun getAllPlaylists(): Flow<List<Playlist>>
 
-    suspend fun getTracksOfPlaylist(playlistName: String): List<TrackInfo>
-
     suspend fun addTrackToTracklist(trackInfo: TrackInfo, playlist: Playlist): Boolean
-
-    suspend fun getListOfNamesOfAllPlaylists(playlistName: String): List<String>
 
     suspend fun saveImageToAppStorage(playlistImage: Uri, playlistName: String): String
 
-    suspend fun getAllPlaylistDetails(playlistName: String): Pair<Playlist, List<TrackInfo>>
+    fun getAllPlaylistDetails(playlistName: String): Flow<Pair<Playlist, List<TrackInfo>>>
 
     suspend fun deleteTrackFromPlaylist(trackId: Int, playlistName: String)
-
-    suspend fun updateTracksInPlaylist(playlistName: String): List<TrackInfo>
 
     suspend fun getPlaylistByName(playlistName: String): Playlist
 
@@ -37,5 +31,7 @@ interface PlaylistsRepository {
         numberOfTracks: Int,
         imagePath: String?,
     )
+
+    suspend fun isPlaylistAlreadyCreated(playlistNameSecondary: String): Boolean
 
 }

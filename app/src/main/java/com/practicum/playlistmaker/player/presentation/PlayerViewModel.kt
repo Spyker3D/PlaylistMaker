@@ -165,13 +165,13 @@ class PlayerViewModel(
                 _trackAddToastState.value =
                     getApplication<App>().getString(
                         R.string.track_successfully_added_to_playlist,
-                        playlist.playlistName
+                        playlist.playlistNameSecondary
                     )
             } else {
                 _trackAddToastState.value =
                     getApplication<App>().getString(
                         R.string.track_insert_to_playlist_error,
-                        playlist.playlistName
+                        playlist.playlistNameSecondary
                     )
             }
         }

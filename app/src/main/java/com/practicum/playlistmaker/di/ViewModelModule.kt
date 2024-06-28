@@ -60,16 +60,22 @@ val viewModelModule = module {
     }
 
     viewModel {
-        NewPlaylistViewModel(playlistInteractor = get())
+        NewPlaylistViewModel(playlistInteractor = get(), application = androidApplication())
     }
 
     viewModel { (playlistName: String) ->
-        PlaylistDetailsViewModel(playlistName = get { parametersOf(playlistName) },
-            playlistInteractor = get(), navigatorInteractor = get())
+        PlaylistDetailsViewModel(
+            playlistName = get { parametersOf(playlistName) },
+            playlistInteractor = get(), navigatorInteractor = get()
+        )
     }
 
     viewModel<EditPlaylistViewModel> { (playlistId: String) ->
-        EditPlaylistViewModel(playlistName =  get { parametersOf(playlistId) }, get())
+        EditPlaylistViewModel(
+            playlistName = get { parametersOf(playlistId) },
+            playlistInteractor = get(),
+            application = androidApplication()
+        )
     }
 }
 

@@ -12,5 +12,6 @@
     <color name="material_design_3_background">#fffef7ff</color>
     <color name="light_gray_for_text">#AEAFB4</color>
     <color name="background_color">#99000000</color>
+    <color name="snack_bar_color">#000000</color>
 
 </resources>

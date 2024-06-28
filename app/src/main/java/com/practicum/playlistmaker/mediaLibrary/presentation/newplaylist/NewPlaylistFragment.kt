@@ -6,16 +6,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
+import com.practicum.playlistmaker.utils.showSnackBar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val NAME_INPUT_TEXT = "NAME_INPUT_TEXT"
@@ -59,7 +63,7 @@ open class NewPlaylistFragment : Fragment() {
                 }
             }
 
-        confirmDialog = MaterialAlertDialogBuilder(requireActivity())
+        confirmDialog = MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialAlertDialog)
             .setTitle(R.string.dialog_title)
             .setMessage(R.string.dialog_message)
             .setNeutralButton(R.string.dialog_cancel) { dialog, which ->
@@ -107,14 +111,31 @@ open class NewPlaylistFragment : Fragment() {
                 description = playlistDescription,
                 imagePath = pathToPlaylistImage
             )
-            if (requireActivity() is AudioplayerActivity) {
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .remove(this@NewPlaylistFragment)
-                    .commit()
+        }
+
+        viewModel.playlistIsCreatedState.observe(viewLifecycleOwner) {
+            if (it.isSuccessfullyCreated) {
+                showSnackBar(it.message)
+                if (requireActivity() is AudioplayerActivity) {
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .remove(this@NewPlaylistFragment)
+                        .commit()
+                } else {
+                    parentFragmentManager.popBackStack()
+                }
             } else {
-                parentFragmentManager.popBackStack()
+                makeToast(it.message)
             }
         }
+
+//            showSnackBar(playlistName)
+//            if (requireActivity() is AudioplayerActivity) {
+//                requireActivity().supportFragmentManager.beginTransaction()
+//                    .remove(this@NewPlaylistFragment)
+//                    .commit()
+//            } else {
+//                parentFragmentManager.popBackStack()
+//            }
 
 //        viewModel.playlistIsCreatedState.observe(viewLifecycleOwner) {
 //            if (it) {
@@ -172,7 +193,6 @@ open class NewPlaylistFragment : Fragment() {
             binding.playlistDescriptionTextInputLayout.editText?.text?.toString()
         )
     }
-
 
     private fun makeToast(toastMessage: String) {
         Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_LONG).show()

@@ -75,4 +75,6 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
 
     implementation("com.markodevcic:peko:3.0.5")
+
+    implementation("androidx.exifinterface:exifinterface:1.3.3")
 }
