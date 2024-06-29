@@ -3,6 +3,7 @@ package com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsand
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,6 +73,7 @@ class PlaylistDetailsFragment : Fragment() {
             onTrackClickListener = {
                 val audioplayerIntent =
                     Intent(requireContext(), AudioplayerActivity::class.java)
+                Log.e("IMAGE", "${it.artworkUrlLarge}")
                 audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, it)
                 startActivity(audioplayerIntent)
             },

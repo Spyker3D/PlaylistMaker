@@ -17,6 +17,7 @@ import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistA
 import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsState
 import com.practicum.playlistmaker.search.presentation.entities.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 const val KEY_SELECTED_TRACK_DETAILS = "TRACK_DETAILS"
 

@@ -11,7 +11,6 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.mediaLibrary.domain.interactor.FavouriteTracksInteractor
 import com.practicum.playlistmaker.mediaLibrary.domain.interactor.PlaylistInteractor
-import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistAdapter
 import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsState
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
 import com.practicum.playlistmaker.player.domain.interactor.AudioPlayerInteractor
@@ -37,8 +36,7 @@ class PlayerViewModel(
         SimpleDateFormat("m:ss", Locale.getDefault())
     }
 
-    private var selectedTrack =
-        savedStateHandle.get<Track>(KEY_SELECTED_TRACK_DETAILS)!!
+    private var selectedTrack = savedStateHandle.get<Track>(KEY_SELECTED_TRACK_DETAILS)!!
 
     private var trackProgressJob: Job? = null
 
