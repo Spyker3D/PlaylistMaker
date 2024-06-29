@@ -73,7 +73,6 @@ class PlaylistDetailsFragment : Fragment() {
             onTrackClickListener = {
                 val audioplayerIntent =
                     Intent(requireContext(), AudioplayerActivity::class.java)
-                Log.e("IMAGE", "${it.artworkUrlLarge}")
                 audioplayerIntent.putExtra(KEY_SELECTED_TRACK_DETAILS, it)
                 startActivity(audioplayerIntent)
             },
