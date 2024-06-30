@@ -16,6 +16,7 @@ data class TrackInfo(
     val previewUrl: String,
     val artworkUrlLarge: String?,
     var isFavourite: Boolean = false,
+    val timeAdded: Long? = 0L
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

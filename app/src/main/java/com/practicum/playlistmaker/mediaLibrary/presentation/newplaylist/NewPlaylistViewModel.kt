@@ -1,46 +1,64 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.newplaylist
 
+import android.app.Application
+import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
 import com.practicum.playlistmaker.mediaLibrary.domain.interactor.PlaylistInteractor
 import kotlinx.coroutines.launch
 
-class NewPlaylistViewModel(
+open class NewPlaylistViewModel(
     private val playlistInteractor: PlaylistInteractor,
-) : ViewModel() {
+    application: Application
+) : AndroidViewModel(application) {
 
-    private val _playlistIsCreatedState = MutableLiveData<Boolean>()
-    val playlistIsCreatedState: LiveData<Boolean> = _playlistIsCreatedState
+    private val _playlistIsCreatedState = MutableLiveData<NewPlaylistStatus>()
+    val playlistIsCreatedState: LiveData<NewPlaylistStatus> = _playlistIsCreatedState
 
-    fun savePlaylist(name: String, description: String, pathToImage: String) {
+    fun savePlaylistCheck(
+        name: String,
+        nameSecondary: String,
+        description: String,
+        imagePath: Uri?,
+    ) {
         viewModelScope.launch {
-            val listOfPlaylistsNames = playlistInteractor.getListOfNamesOfAllPlaylists(name)
-            if (name in listOfPlaylistsNames) {
-                _playlistIsCreatedState.value = false
-                return@launch
+            if (playlistInteractor.isPlaylistAlreadyCreated(nameSecondary)) {
+                val message = getApplication<App>().getString(R.string.playlist_name_error_message)
+                _playlistIsCreatedState.value =
+                    NewPlaylistStatus(isSuccessfullyCreated = false, message = message)
+
             } else {
                 playlistInteractor.insertPlaylist(
                     Playlist(
                         playlistName = name,
+                        playlistNameSecondary = nameSecondary,
                         playlistDescription = description,
-                        pathToImage = pathToImage
+                        pathToImage = if (imagePath != null) {
+                            playlistInteractor.getImagePathToAppStorage(
+                                playlistInteractor.saveImageToAppStorage(
+                                    playlistImage = imagePath,
+                                    playlistName = name
+                                )
+                            ).toString()
+                        } else {
+                            null
+                        }
                     )
                 )
-                _playlistIsCreatedState.value = true
+                val message = getApplication<App>().getString(
+                    R.string.playlist_created_message,
+                    nameSecondary
+                )
+                _playlistIsCreatedState.value =
+                    NewPlaylistStatus(isSuccessfullyCreated = true, message = message)
             }
+
         }
     }
-
-    fun saveImageToAppStorage(playlistImage: String, playlistName: String) {
-        viewModelScope.launch {
-            playlistInteractor.saveImageToAppStorage(
-                playlistImage = playlistImage,
-                playlistName = playlistName
-            )
-        }
-    }
-
 }

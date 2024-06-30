@@ -1,39 +1,40 @@
 package com.practicum.playlistmaker.mediaLibrary.presentation.newplaylist
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
+import com.practicum.playlistmaker.utils.showSnackBar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val NAME_INPUT_TEXT = "NAME_INPUT_TEXT"
 private const val DESCRIPTION_INPUT_TEXT = "DESCRIPTION_INPUT_TEXT"
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding
+    open val binding
         get() = _binding!!
     private var imageIsEmpty: Boolean = true
     lateinit var confirmDialog: MaterialAlertDialogBuilder
-    private var pathToPlaylistImage: String = ""
+    var pathToPlaylistImage: Uri? = null
     private var playlistName: String = ""
     private var playlistDescription: String = ""
-    private val viewModel: NewPlaylistViewModel by viewModel<NewPlaylistViewModel>()
+    open val viewModel: NewPlaylistViewModel by viewModel<NewPlaylistViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,13 +57,13 @@ class NewPlaylistFragment : Fragment() {
                 if (uri != null) {
                     binding.newPlaylistImagePlaceholder.setImageURI(uri)
                     imageIsEmpty = false
-                    pathToPlaylistImage = uri.toString()
+                    pathToPlaylistImage = uri
                 } else {
                     Log.d("PhotoPicker", "No image selected")
                 }
             }
 
-        confirmDialog = MaterialAlertDialogBuilder(requireActivity())
+        confirmDialog = MaterialAlertDialogBuilder(requireActivity(), R.style.MaterialAlertDialog)
             .setTitle(R.string.dialog_title)
             .setMessage(R.string.dialog_message)
             .setNeutralButton(R.string.dialog_cancel) { dialog, which ->
@@ -104,32 +105,58 @@ class NewPlaylistFragment : Fragment() {
         }
 
         binding.buttonCreatePlaylist.setOnClickListener {
-            viewModel.savePlaylist(
+            viewModel.savePlaylistCheck(
                 name = playlistName,
-                description = pathToPlaylistImage,
-                pathToImage = pathToPlaylistImage
+                nameSecondary = playlistName,
+                description = playlistDescription,
+                imagePath = pathToPlaylistImage
             )
         }
 
         viewModel.playlistIsCreatedState.observe(viewLifecycleOwner) {
-            if (it) {
-                viewModel.saveImageToAppStorage(
-                    playlistImage = pathToPlaylistImage,
-                    playlistName = playlistName
-                )
-                makeToast(resources.getString(R.string.playlist_created_message, playlistName))
-
+            if (it.isSuccessfullyCreated) {
+                showSnackBar(it.message)
                 if (requireActivity() is AudioplayerActivity) {
                     requireActivity().supportFragmentManager.beginTransaction()
                         .remove(this@NewPlaylistFragment)
-                        .commit()  // не срабатывает
+                        .commit()
                 } else {
                     parentFragmentManager.popBackStack()
                 }
             } else {
-                makeToast(resources.getString(R.string.playlist_name_error_message))
+                makeToast(it.message)
             }
         }
+
+//            showSnackBar(playlistName)
+//            if (requireActivity() is AudioplayerActivity) {
+//                requireActivity().supportFragmentManager.beginTransaction()
+//                    .remove(this@NewPlaylistFragment)
+//                    .commit()
+//            } else {
+//                parentFragmentManager.popBackStack()
+//            }
+
+//        viewModel.playlistIsCreatedState.observe(viewLifecycleOwner) {
+//            if (it) {
+//                viewModel.savePlaylist(
+//                    playlistImage = pathToPlaylistImage,
+//                    playlistName = playlistName,
+//                    playlistDescription = playlistDescription
+//                )
+//                makeToast(resources.getString(R.string.playlist_created_message, playlistName))
+//
+//                if (requireActivity() is AudioplayerActivity) {
+//                    requireActivity().supportFragmentManager.beginTransaction()
+//                        .remove(this@NewPlaylistFragment)
+//                        .commit()
+//                } else {
+//                    parentFragmentManager.popBackStack()
+//                }
+//            } else {
+//                makeToast(resources.getString(R.string.playlist_name_error_message))
+//            }
+//        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.playlistNameTextInputLayout.editText?.text?.isNotEmpty() == true ||
@@ -166,7 +193,6 @@ class NewPlaylistFragment : Fragment() {
             binding.playlistDescriptionTextInputLayout.editText?.text?.toString()
         )
     }
-
 
     private fun makeToast(toastMessage: String) {
         Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_LONG).show()

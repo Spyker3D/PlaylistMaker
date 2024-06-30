@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.practicum.playlistmaker.mediaLibrary.presentation.MediaLibraryFragment">
+    tools:context="com.practicum.playlistmaker.mediaLibrary.presentation.MediaLibraryFragment"
+    android:id="@+id/media_library_view"
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_media_library"

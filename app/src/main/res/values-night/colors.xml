@@ -3,4 +3,6 @@
     <color name="image_tint">@android:color/white</color>
     <color name="update_button_text_color">#1A1B22</color>
     <color name="material_design_3_background">#ff141218</color>
+    <color name="snack_bar_color">#FFFFFF</color>
+
 </resources>

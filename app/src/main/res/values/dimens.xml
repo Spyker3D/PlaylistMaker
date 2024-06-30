@@ -8,6 +8,7 @@
     <dimen name="activity_settings_elements_margintop">42dp</dimen>
     <dimen name="track_image_rounding">2dp</dimen>
     <dimen name="track_image_rounding_audiotplayer">8dp</dimen>
+    <dimen name="playlist_image_rounding_bottomsheet">2dp</dimen>
     <dimen name="bottom_sheet_rounding_audioplayer">16dp</dimen>
     <dimen name="placeholders_texts_and_headers">19sp</dimen>
     <dimen name="medialibrary_tab_text">14sp</dimen>
