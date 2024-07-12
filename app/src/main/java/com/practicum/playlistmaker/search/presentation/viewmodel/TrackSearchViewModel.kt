@@ -40,7 +40,6 @@ class TrackSearchViewModel(
         MutableLiveData<SearchState>()
 
     val stateLiveData: LiveData<SearchState> = _stateLiveData
-    private val handler = Handler(Looper.getMainLooper())
 
     private var searchJob: Job? = null
     private var showHistoryJob: Job? = null
@@ -161,12 +160,7 @@ class TrackSearchViewModel(
         saveHistoryTrackUseCase.execute(historyList)
     }
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
-
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 }
