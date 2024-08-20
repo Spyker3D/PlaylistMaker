@@ -30,6 +30,11 @@ class FavouriteTracksRepositoryImpl(private val appDatabase: AppDatabase) :
         track.isFavourite = track.trackId in favouriteTracksIds
     }
 
+    override suspend fun isFavourite(track: TrackInfo): Boolean {
+        val favouriteTracksIds = appDatabase.trackDao().getFavouriteTracksIds()
+        return track.trackId in favouriteTracksIds
+    }
+
 }
 
 

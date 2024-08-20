@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,7 +120,10 @@ class SearchFragment : Fragment() {
         }
         when (state) {
             is SearchState.Loading -> showLoading()
-            is SearchState.Content -> showContent(state.trackList)
+            is SearchState.Content -> {
+                showContent(state.trackList)
+                Log.d("LIST", "${state.trackList}")
+            }
             is SearchState.Error -> showError(state, state.errorMessage)
             is SearchState.InternetConnectionError -> showError(state, state.errorMessage)
             is SearchState.Empty -> showEmpty(state.message)

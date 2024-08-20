@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.mediaLibrary.data.repository
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import androidx.core.net.toUri
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 
 fun Context.getFileByPlaylistName(playlistName: String) = File(
     getExternalFilesDir(Environment.DIRECTORY_PICTURES),

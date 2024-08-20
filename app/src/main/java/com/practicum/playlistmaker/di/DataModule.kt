@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.di
 
 import android.content.Context
-import androidx.room.Room
 import com.google.gson.Gson
 import com.practicum.playlistmaker.mediaLibrary.data.db.AppDatabase
 import com.practicum.playlistmaker.search.data.network.ITUNES_URL

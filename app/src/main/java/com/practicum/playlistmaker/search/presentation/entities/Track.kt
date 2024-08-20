@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.presentation.entities
 
 import android.os.Parcelable
-import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
