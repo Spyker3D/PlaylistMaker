@@ -3,14 +3,11 @@ package com.practicum.playlistmaker.search.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
 import com.practicum.playlistmaker.search.data.dto.NetworkResponse
 import com.practicum.playlistmaker.search.data.dto.TrackSearchRequest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 const val ITUNES_URL = "https://itunes.apple.com"
 

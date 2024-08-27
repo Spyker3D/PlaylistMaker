@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.mediaLibrary.presentation.playlistdetailsand
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistEditBinding
-import com.practicum.playlistmaker.mediaLibrary.presentation.editplaylist.EditPlaylistViewModel
 import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistsFragment
 import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
 import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAILS

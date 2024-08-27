@@ -2,10 +2,8 @@ package com.practicum.playlistmaker.mediaLibrary.presentation.editplaylist
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.addCallback
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R

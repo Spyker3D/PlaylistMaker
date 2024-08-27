@@ -1,15 +1,11 @@
 package com.practicum.playlistmaker.search.presentation.viewmodel
 
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.di.viewModelModule
 import com.practicum.playlistmaker.search.domain.entities.Resource
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.search.domain.interactor.GetHistoryTrackUseCase
@@ -17,16 +13,11 @@ import com.practicum.playlistmaker.search.domain.interactor.SaveHistoryTrackUseC
 import com.practicum.playlistmaker.search.domain.interactor.SearchTrackUseCase
 import com.practicum.playlistmaker.search.presentation.entities.SearchState
 import com.practicum.playlistmaker.search.presentation.entities.Track
-import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper
 import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper.mapToDomain
 import com.practicum.playlistmaker.search.presentation.mapper.TrackPresentationMapper.mapToPresentation
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
-import kotlin.system.measureTimeMillis
 
 class TrackSearchViewModel(
     application: Application,
@@ -40,7 +31,6 @@ class TrackSearchViewModel(
         MutableLiveData<SearchState>()
 
     val stateLiveData: LiveData<SearchState> = _stateLiveData
-    private val handler = Handler(Looper.getMainLooper())
 
     private var searchJob: Job? = null
     private var showHistoryJob: Job? = null
@@ -161,12 +151,7 @@ class TrackSearchViewModel(
         saveHistoryTrackUseCase.execute(historyList)
     }
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
-
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 }

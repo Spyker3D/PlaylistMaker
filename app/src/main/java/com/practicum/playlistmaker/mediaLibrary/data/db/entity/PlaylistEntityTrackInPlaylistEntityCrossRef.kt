@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.mediaLibrary.data.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.util.TableInfo
 
 @Entity(
     tableName = "playlist_track_cross_ref",

@@ -4,9 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.databinding.AudioplayerPlaylistItemViewBinding
-import com.practicum.playlistmaker.databinding.PlaylistItemViewBinding
 import com.practicum.playlistmaker.mediaLibrary.domain.entities.Playlist
-import com.practicum.playlistmaker.mediaLibrary.presentation.playlists.PlaylistViewHolder
 
 class BottomSheetAdapter(
     playlistsList: List<Playlist>,

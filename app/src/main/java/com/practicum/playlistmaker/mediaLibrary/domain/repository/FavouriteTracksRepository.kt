@@ -12,4 +12,6 @@ interface FavouriteTracksRepository {
 
     suspend fun updateTrackStatus(track: TrackInfo)
 
+    suspend fun isFavourite(track: TrackInfo): Boolean
+
 }

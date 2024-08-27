@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.view.LayoutInflater
-import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.databinding.ClearHistoryButtonBinding

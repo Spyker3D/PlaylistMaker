@@ -9,7 +9,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentFavoriteTracksBinding
 import com.practicum.playlistmaker.player.presentation.AudioplayerActivity
 import com.practicum.playlistmaker.player.presentation.KEY_SELECTED_TRACK_DETAILS

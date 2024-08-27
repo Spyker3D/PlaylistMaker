@@ -1,14 +1,10 @@
 package com.practicum.playlistmaker.search.data.repository
 
-import com.practicum.playlistmaker.mediaLibrary.data.db.AppDatabase
-import com.practicum.playlistmaker.search.data.mapper.TrackMapper
 import com.practicum.playlistmaker.search.data.mapper.TrackMapper.mapToDomain
 import com.practicum.playlistmaker.search.data.mapper.TrackMapper.mapToStorage
 import com.practicum.playlistmaker.search.data.storage.TrackStorage
 import com.practicum.playlistmaker.search.domain.entities.TrackInfo
 import com.practicum.playlistmaker.search.domain.repository.TrackStorageRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class TrackStorageRepositoryImpl(
     private val trackStorage: TrackStorage,

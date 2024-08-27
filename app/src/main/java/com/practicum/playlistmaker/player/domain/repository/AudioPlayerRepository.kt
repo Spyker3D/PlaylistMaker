@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.player.domain.repository
 
-import android.text.BoringLayout
 import com.practicum.playlistmaker.player.domain.entities.AudioPlayerStatesListener
 
 interface AudioPlayerRepository {

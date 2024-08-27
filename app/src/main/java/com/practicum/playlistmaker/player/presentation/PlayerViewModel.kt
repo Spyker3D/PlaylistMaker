@@ -136,19 +136,30 @@ class PlayerViewModel(
     fun onFavouriteClicked() {
         if (isFavouriteJob?.isActive == true) return
         val track = _playerState.value?.track ?: return
+
         isFavouriteJob = viewModelScope.launch {
-            val trackInfo = track.mapToDomain()
-
-            if (track.isFavorite) {
-                favouriteTracksInteractor.deleteFromFavouriteTracks(trackInfo)
-                track.isFavorite = false
+            val isInFavouriteList = favouriteTracksInteractor.isFavourite(track.mapToDomain())
+            if (isInFavouriteList) {
+                favouriteTracksInteractor.deleteFromFavouriteTracks(track.mapToDomain())
+                _isFavourite.value = false
             } else {
-                favouriteTracksInteractor.insertToFavouriteTracks(trackInfo)
-                track.isFavorite = true
+                favouriteTracksInteractor.insertToFavouriteTracks(track.mapToDomain())
+                _isFavourite.value = true
             }
-
-            _isFavourite.value = track.isFavorite
         }
+//        isFavouriteJob = viewModelScope.launch {
+//            val trackInfo = track.mapToDomain()
+//
+//            if (track.isFavorite) {
+//                favouriteTracksInteractor.deleteFromFavouriteTracks(trackInfo)
+//                track.isFavorite = false
+//            } else {
+//                favouriteTracksInteractor.insertToFavouriteTracks(trackInfo)
+//                track.isFavorite = true
+//            }
+//
+//            _isFavourite.value = track.isFavorite
+//        }
     }
 
     override fun onCleared() {
